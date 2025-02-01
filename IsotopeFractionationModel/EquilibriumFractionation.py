@@ -95,29 +95,21 @@ def eq_frac_factor(
     check_validity(PHASE_TYPE, phase_type_list, "PHASE_TYPE")
 
     temp = temp_C + temp0_K
-
-    if PHASE_TYPE == "vl":
-        params_dict = {
-            "H218O": [1137, -0.4156, -0.002067],
-            "HDO": [24844, -76.248, 0.052612],        
-        }    
     
-        a1, a2, a3 = params_dict[ISO_TYPE]
-                
-        alpha =  np.exp(a1 / temp**2 + a2 / temp + a3)
-        
-    elif PHASE_TYPE == "vi":
-        params_dict = {
-            "H218O": [11.839, -0.028224, 1],
-            "HDO": [16289, -0.0945, 2]
-        }  
-
-        a1, a2, b = params_dict[ISO_TYPE]
-
-        alpha = np.exp(a1 / temp**b + a2)
-        
-    else:
-        raise ValueError(f"Invalid PHASE_TYPE: {PHASE_TYPE}. Must be 'vl' or 'vi'.")
+    params_dict = {
+        "H218O": {
+            "vl": [1137, -0.4156, -0.002067],
+            "vi": [0, 11.839, -0.028224],
+        },
+        "HDO": {
+            "vl": [24844, -76.248, 0.052612],        
+            "vi": [16289, 0, -0.0945]
+        },
+    }    
+   
+    a1, a2, a3 = params_dict[ISO_TYPE][PHASE_TYPE]        
+    alpha =  np.exp(a1 / temp**2 + a2 / temp + a3)
+    
 
     return alpha
 

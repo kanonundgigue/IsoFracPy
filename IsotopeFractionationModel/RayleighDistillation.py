@@ -12,7 +12,7 @@ from .BasicUtility import (
 )
 from .KineticFractionation import (
     kin_frac_factor_sea_evap,
-    kin_frac_factor_supersat_ice,
+    kin_frac_factor_ice,
 )
 from .SeaEvaporationIsotopeCalculation import initial_sea_evap_fractionation
 
@@ -37,7 +37,9 @@ def adjust_alpha_raindrop_evap(alpha: float, alpha_kin: float, reevap_factor: fl
     References
     - Worden et al. 2007, Eq. 4.14.
     """    
-    return alpha * (1 - reevap_factor / alpha_kin) / (1 - reevap_factor)
+    # alpha_e = alpha_kin
+    alpha_e = 1.098
+    return alpha * (1 - reevap_factor / alpha_e) / (1 - reevap_factor)
 
 def rayleigh_process(
     temp_init: float, 
@@ -108,7 +110,7 @@ def rayleigh_process(
 
     return {
         "q": q_list,
-        "delta": delta_list * 1000,
+        "delta": delta_list * 1000, # ratio -> permil
         "temp": temp_rayleigh_list,
     }
 
@@ -234,7 +236,8 @@ def plot_q_dq(
     ax.set_ylim(ylim)
     ax.set_xlabel("Specific humidity [g/kg]")
     ax.set_ylabel(f"{ylabel} [‰]")
-
+    plt.grid()
+    
     if num_of_subplot == 1:
         plt.legend()
         plt.show()

@@ -4,7 +4,7 @@
 temp0_K = 273.15  # Freezing point of water [K]
 e0 = 6.112  # Reference saturation vapor pressure [hPa]
 Lv = 2.5e6  # Latent heat of vaporization [J/kg]
-R_const = 8.314  # Universal gas constant [J/(mol·K)]
+R_const = 8.314  # Universal gas constant [kJ/(mol·K)]
 Mw = 18.015  # Molar mass of water [g/mol]
 Ma = 28.964  # Molar mass of air [g/mol]
 

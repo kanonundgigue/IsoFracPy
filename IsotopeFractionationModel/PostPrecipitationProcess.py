@@ -15,8 +15,11 @@ def post_snowfall(
     snow: float,
     delta_snow: float,
     resub_factor: float,
+    q_final: float,
     rh_surf: float = 0.7,
     drh: float = 0.1,
+    pressure: float = 900, # hPa
+
     # snow_duration_factor: float = 100,
 ) -> dict:
     """
@@ -46,16 +49,20 @@ def post_snowfall(
         - `delta` (float): Updated isotopic ratio of surface vapor (ex., X'/X - 1 [ND]).
         - `q` (float): Updated specific humidity of surface air (g/kg).
     """
-
-    # snow_eff = snow * snow_duration_factor
-    snow_eff = q_surf * drh / rh_surf / resub_factor
-
+    # prcp_obs = 5 / (24 * 60 * 60)
+    # R_d = R_const / Ma * 1000
+    # rho_air = pressure * 100 / (R_d * 255)
+    # u_fall = 1.5
+    # snow_eff = rho_air * u_fall * q_final
+    # snow_eff = q_surf * drh / rh_surf * (1 - resub_factor)
+    # snow_eff = q_surf * drh / rh_surf
+    
     delta_q_surf_updated, q_surf_updated = resublimation(
-        delta_q_surf, delta_snow, q_surf, snow_eff, resub_factor
+        delta_q_surf, delta_snow, q_surf, snow, resub_factor
     )
     return {
         "delta_snow": delta_snow * 1000,
-        "snow": snow_eff,
+        "snow": snow,
         "delta":delta_q_surf_updated * 1000, 
         "q": q_surf_updated
     }
@@ -89,12 +96,12 @@ def resublimation(
         - float: Updated specific humidity of surface vapor (g/kg).
     """
     
-    qi = np.abs(snow) * f # 降雪のうち昇華により大気に戻る量
+    qsub = np.abs(snow) * f # 降雪のうち昇華により大気に戻る量
     
     Rv = delta_vapor + 1 # 水蒸気の同位体比（レイリー蒸留後)
     Ri = delta_snow + 1 # 降雪の同位体比
-    print()
-    q_updated = qv + qi # 水蒸気量の更新
-    R_updated = (qv * Rv + qi * Ri) / q_updated # 同位体比の更新
+
+    q_updated = qv + qsub # 水蒸気量の更新
+    R_updated = (qv * Rv + qsub * Ri) / q_updated # 同位体比の更新
 
     return R_updated - 1, q_updated    

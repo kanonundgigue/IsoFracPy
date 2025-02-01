@@ -11,10 +11,10 @@ from .EquilibriumFractionation import (
 )
 from .KineticFractionation import (
     kin_frac_factor_sea_evap,
-    kin_frac_factor_supersat_ice,
+    kin_frac_factor_ice,
 )
 
-def interp_alpha_kin_supersat_ice(alpha_kin_list, invalid_thres: float = 1) -> list: 
+def interp_alpha_kin_ice(alpha_kin_list, invalid_thres: float = 1) -> list: 
     """
     Interpolate alpha_kin values with linear interpolation.
 
@@ -59,12 +59,12 @@ def prepare_frac_factors(
     )
     
     alpha_kin_list = [
-        kin_frac_factor_supersat_ice(
+        kin_frac_factor_ice(
             temp, ISO_TYPE=ISO_TYPE
         )
         for temp in temp_list
     ]
-    alpha_kin_list = interp_alpha_kin_supersat_ice(alpha_kin_list)
+    alpha_kin_list = interp_alpha_kin_ice(alpha_kin_list)
     
     alpha_eff_list = [
         alpha_eq_list[i] * alpha_kin_list[i]

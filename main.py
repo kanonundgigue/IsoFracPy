@@ -2,6 +2,7 @@ import numpy as np
 from IsotopeFractionationModel import (
     get_init_conditions,
     rayleigh_process,
+    rayleigh_step,
     plot_q_dq,
     post_snowfall,
     prepare_frac_factors,
@@ -19,6 +20,8 @@ def configure_model():
         ## いじる必要のないパラメータ
         "ISO_TYPE": "HDO",  # Isotope type to simulate. Options are "HDO" or "H218O".
         "dt": 0.5,  # Temperature step size for the simulation [°C].
+        "h_air": 1,
+        "surface_wind": 6.5,
         "temp_min": -40,  # Minimum temperature for the simulation range [°C].
         "temp_max": 10,  # Maximum temperature for the simulation range [°C].
         "temp_thres_min": -20,  # Lower temperature threshold for ice-vapor fractionation ("vi" phase) [°C].
@@ -28,7 +31,7 @@ def configure_model():
         "temp_sea_init_list": [ 0, 0, 5, 10, 15],  # List of initial sea surface temperatures [°C].
         "temp_air_init_list": [-5, 0, 5, 10, 15],  # List of initial air temperatures above the sea surface [°C].
         "temp_air_fin": -30,  # Final air temperature after Rayleigh distillation [°C].
-        "BOOL_REEVAP": True,  # Whether to consider raindrop re-evaporation during Rayleigh distillation.
+        "BOOL_REEVAP": False,  # Whether to consider raindrop re-evaporation during Rayleigh distillation.
                               # (Ref. Worden et al., 2007).
         "reevap_factor": 0.7,  # Re-evaporation factor for raindrops. Affects the fractionation adjupsstment.
         "BOOL_RESUB": True,  # Whether to consider snow sublimation as a post-precipitation process.
@@ -102,7 +105,9 @@ def initialization(config: dict):
     return get_init_conditions(
         config["temp_sea_init_list"],
         config["temp_air_init_list"],
-        ISO_TYPE=config["ISO_TYPE"]
+        ISO_TYPE=config["ISO_TYPE"],
+        h_air=config["h_air"],
+        surface_wind=config["surface_wind"]
     )
 
 def get_fractionation_factors(config: dict):
@@ -160,7 +165,7 @@ def process_vapor_isotopes(
             temp_air_init, 
             config["temp_air_fin"], 
             initial_dict["q_sat_air"][i], 
-            initial_dict["delta_air"][i] / 1000, 
+            initial_dict["delta_air"][i] / 1000,  # permil -> ratio
             alpha_mode_list, # 名前考える             
             frac_factors_dict["alpha_kin"], 
             config["temp_default_list"], 
@@ -192,12 +197,29 @@ def perform_post_precipitation(config, rayleigh_results, alpha_mode_list):
     Returns:
     - dict: Results from the post-precipitation process.
     """
-    alpha_surf_idx = np.nanargmin(
-        np.abs(config["temp_default_list"] - config["temp_surf"])
+    alpha_final_idx = np.nanargmin(
+        # np.abs(config["temp_default_list"] - config["temp_surf"])
+        np.abs(config["temp_default_list"] - rayleigh_results["temp"][-1])
     )
-    alpha_surf = alpha_mode_list[alpha_surf_idx]
-    delta_snow = (rayleigh_results["delta"][-1] / 1000 + 1) * alpha_surf - 1 
-    snow = rayleigh_results["q"][-2] - rayleigh_results["q"][-1] 
+    alpha_final = alpha_mode_list[alpha_final_idx]
+    # alpha_final = 1
+    q_final = rayleigh_results["q"][-1]
+    delta_final = rayleigh_results["delta"][-1]
+    
+    prcp_obs = 5 / (24 * 60 * 60) # kg/m2/s
+    R_const = 8.314  # Universal gas constant [kJ/(mol·K)] 
+    Ma = 28.964  # Molar mass of air [g/mol]
+    pressure=900
+    R_d = R_const / Ma * 1000
+    rho_air = pressure * 100 / (R_d * 255)
+    u_fall = 1.5
+    snow = prcp_obs / (u_fall * rho_air) / (1 - config["resub_factor"]) * 1000 # g/kg
+    delta_snow = rayleigh_step(alpha_final, q_final, snow, delta_final/1000)    
+    
+    print(q_final,snow, delta_final, delta_snow*1000)
+
+    # delta_snow = (rayleigh_results["delta"][-1] / 1000 + 1) * alpha_final - 1 
+    # snow = rayleigh_results["q"][-2] - rayleigh_results["q"][-1] # dummy
 
     if config["BOOL_RESUB"]:
         # Post-precipitation process
@@ -207,6 +229,7 @@ def perform_post_precipitation(config, rayleigh_results, alpha_mode_list):
             snow, 
             delta_snow,
             config["resub_factor"],
+            rayleigh_results["q"][-1],
             config["rh_surf"],
             config["drh"],
             # config["snow_duration_factor"],

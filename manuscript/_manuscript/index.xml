@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE article PUBLIC "-//NLM//DTD JATS (Z39.96) Journal Archiving
+and Interchange DTD v1.2 20190208//EN" "JATS-archivearticle1.dtd">
+<article xmlns:mml="http://www.w3.org/1998/Math/MathML" xmlns:xlink="http://www.w3.org/1999/xlink" dtd-version="1.2" article-type="other">
+  <front>
+    <article-meta>
+      <title-group>
+        <article-title>Description of IsoFracPy</article-title>
+      </title-group>
+      <contrib-group>
+        <contrib contrib-type="author" corresp="yes">
+          <name>
+            <surname>Kino</surname>
+            <given-names>Kanon</given-names>
+          </name>
+          <string-name>Kanon Kino</string-name>
+          <role vocab="https://credit.niso.org" vocab-term="writing – original draft" vocab-term-identifier="https://credit.niso.org/contributor-roles/writing-original-draft/">writing</role>
+          <xref ref-type="aff" rid="aff-1">a</xref>
+          <xref ref-type="corresp" rid="cor-1">*</xref>
+        </contrib>
+      </contrib-group>
+      <aff id="aff-1">
+        <institution-wrap>
+          <institution>The University of Tokyo</institution>
+        </institution-wrap>
+      </aff>
+      <author-notes>
+        <corresp id="cor-1"/>
+      </author-notes>
+      <history/>
+    </article-meta>
+  </front>
+  <body>
+    <sec id="section">
+      <title>Section</title>
+      <p>This is a simple placeholder for the manuscript’s main document
+  (<xref alt="Knuth 1984" rid="ref-knuth84" ref-type="bibr">Knuth
+  1984</xref>).</p>
+    </sec>
+  </body>
+  <back>
+    <ref-list>
+      <title/>
+      <ref id="ref-knuth84">
+        <element-citation publication-type="article-journal">
+          <person-group person-group-type="author">
+            <name>
+              <surname>Knuth</surname>
+              <given-names>Donald E.</given-names>
+            </name>
+          </person-group>
+          <article-title>Literate programming</article-title>
+          <source>Comput. J.</source>
+          <publisher-name>Oxford University Press, Inc.</publisher-name>
+          <publisher-loc>USA</publisher-loc>
+          <year iso-8601-date="1984-05">1984</year>
+          <month>05</month>
+          <volume>27</volume>
+          <issue>2</issue>
+          <issn>0010-4620</issn>
+          <uri>https://doi.org/10.1093/comjnl/27.2.97</uri>
+          <pub-id pub-id-type="doi">10.1093/comjnl/27.2.97</pub-id>
+          <fpage>97</fpage>
+          <lpage>111</lpage>
+        </element-citation>
+      </ref>
+    </ref-list>
+  </back>
+  <sub-article article-type="notebook" id="nb-3-nb-1">
+    <front-stub>
+      <title-group>
+        <article-title>Description of IsoFraPy</article-title>
+      </title-group>
+    </front-stub>
+    <body>
+      <sec id="cell-3e91430d-f478-4780-8d4a-85b8c368edfd-nb-1" specific-use="notebook-content">
+        <sec id="基本の式-nb-1">
+          <title>基本の式</title>
+        </sec>
+        <sec id="cell-3dfd3d4a-ad90-4401-929e-4b51bad48791-nb-1" specific-use="notebook-content">
+          <sec id="飽和水蒸気圧-nb-1">
+            <title>飽和水蒸気圧</title>
+            <p>飽和水蒸気圧( <inline-formula><alternatives><tex-math><![CDATA[e_s]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:msub><mml:mi>e</mml:mi><mml:mi>s</mml:mi></mml:msub></mml:math></alternatives></inline-formula>
+    )は、Sonntag (1990) の式を用いて求められる。</p>
+            <p>
+              <disp-formula>
+                <alternatives>
+                  <tex-math><![CDATA[
+        e_s \ \text{ [hPa]}= exp \big( {\frac{a}{T} + b + cT + dT^2 + e \mathrm{ln}(T) } \big) / 100
+    ]]></tex-math>
+                  <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mml:mrow>
+                      <mml:msub>
+                        <mml:mi>e</mml:mi>
+                        <mml:mi>s</mml:mi>
+                      </mml:msub>
+                      <mml:mspace width="0.222em"/>
+                      <mml:mrow>
+                        <mml:mspace width="0.333em"/>
+                        <mml:mtext mathvariant="normal"> [hPa]</mml:mtext>
+                      </mml:mrow>
+                      <mml:mo>=</mml:mo>
+                      <mml:mi>e</mml:mi>
+                      <mml:mi>x</mml:mi>
+                      <mml:mi>p</mml:mi>
+                      <mml:mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mml:mo>
+                      <mml:mrow>
+                        <mml:mfrac>
+                          <mml:mi>a</mml:mi>
+                          <mml:mi>T</mml:mi>
+                        </mml:mfrac>
+                        <mml:mo>+</mml:mo>
+                        <mml:mi>b</mml:mi>
+                        <mml:mo>+</mml:mo>
+                        <mml:mi>c</mml:mi>
+                        <mml:mi>T</mml:mi>
+                        <mml:mo>+</mml:mo>
+                        <mml:mi>d</mml:mi>
+                        <mml:msup>
+                          <mml:mi>T</mml:mi>
+                          <mml:mn>2</mml:mn>
+                        </mml:msup>
+                        <mml:mo>+</mml:mo>
+                        <mml:mi>e</mml:mi>
+                        <mml:mrow>
+                          <mml:mi mathvariant="normal">l</mml:mi>
+                          <mml:mi mathvariant="normal">n</mml:mi>
+                        </mml:mrow>
+                        <mml:mrow>
+                          <mml:mo stretchy="true" form="prefix">(</mml:mo>
+                          <mml:mi>T</mml:mi>
+                          <mml:mo stretchy="true" form="postfix">)</mml:mo>
+                        </mml:mrow>
+                      </mml:mrow>
+                      <mml:mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mml:mo>
+                      <mml:mi>/</mml:mi>
+                      <mml:mn>100</mml:mn>
+                    </mml:mrow>
+                  </mml:math>
+                </alternatives>
+              </disp-formula>
+            </p>
+            <p><inline-formula><alternatives><tex-math><![CDATA[T]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mi>T</mml:mi></mml:math></alternatives></inline-formula>は気温（K）、各係数はTable
+    2に示した。なお、このモデルでは、水と氷それぞれに対する飽和水蒸気圧を0
+    °Cで切り替えている。</p>
+            <list list-type="bullet">
+              <list-item>
+                <p>
+                  <bold>Table 1</bold>
+                </p>
+              </list-item>
+            </list>
+            <table-wrap>
+              <table>
+                <colgroup>
+                  <col width="9%"/>
+                  <col width="10%"/>
+                  <col width="15%"/>
+                  <col width="15%"/>
+                  <col width="17%"/>
+                  <col width="17%"/>
+                  <col width="16%"/>
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Phase</th>
+                    <th/>
+                    <th>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[a]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:mi>a</mml:mi>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </th>
+                    <th>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[b]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:mi>b</mml:mi>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </th>
+                    <th>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[c]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:mi>c</mml:mi>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </th>
+                    <th>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[d]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:mi>d</mml:mi>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </th>
+                    <th>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[e]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:mi>e</mml:mi>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Liquid</td>
+                    <td/>
+                    <td>-6096.9385</td>
+                    <td>21.2409642</td>
+                    <td>-2.711193e-2</td>
+                    <td>1.673952e-5</td>
+                    <td>2.433502</td>
+                  </tr>
+                  <tr>
+                    <td>Ice</td>
+                    <td/>
+                    <td>-6024.5282</td>
+                    <td>29.32707</td>
+                    <td>1.0613868e-2</td>
+                    <td>-1.3198825e-5</td>
+                    <td>-0.49382577</td>
+                  </tr>
+                </tbody>
+              </table>
+            </table-wrap>
+          </sec>
+          <sec id="cell-3b7785cc-7068-42b4-9607-843503833145-nb-1" specific-use="notebook-content">
+  </sec>
+          <sec id="平衡分別係数-nb-1">
+            <title>平衡分別係数</title>
+            <p>水同位体の平衡分別係数(<inline-formula><alternatives><tex-math><![CDATA[\alpha_{eq}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>e</mml:mi><mml:mi>q</mml:mi></mml:mrow></mml:msub></mml:math></alternatives></inline-formula>)は、Majoube
+    (1971a; 1971b) の経験式を用いて求められる。
+    <disp-formula><alternatives><tex-math><![CDATA[
+        \alpha_{eq,vl} = exp \big(\frac{a_1}{T^2} + \frac{a_2}{T} + a_3) 
+    ]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="block"><mml:mrow><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>e</mml:mi><mml:mi>q</mml:mi><mml:mo>,</mml:mo><mml:mi>v</mml:mi><mml:mi>l</mml:mi></mml:mrow></mml:msub><mml:mo>=</mml:mo><mml:mi>e</mml:mi><mml:mi>x</mml:mi><mml:mi>p</mml:mi><mml:mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mml:mo><mml:mfrac><mml:msub><mml:mi>a</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:msup><mml:mi>T</mml:mi><mml:mn>2</mml:mn></mml:msup></mml:mfrac><mml:mo>+</mml:mo><mml:mfrac><mml:msub><mml:mi>a</mml:mi><mml:mn>2</mml:mn></mml:msub><mml:mi>T</mml:mi></mml:mfrac><mml:mo>+</mml:mo><mml:msub><mml:mi>a</mml:mi><mml:mn>3</mml:mn></mml:msub><mml:mo stretchy="false" form="postfix">)</mml:mo></mml:mrow></mml:math></alternatives></disp-formula></p>
+            <p><disp-formula><alternatives><tex-math><![CDATA[
+        \alpha_{eq,vi} = exp \big(\frac{a_1}{T^{b}} + a_2) 
+    ]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="block"><mml:mrow><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>e</mml:mi><mml:mi>q</mml:mi><mml:mo>,</mml:mo><mml:mi>v</mml:mi><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo>=</mml:mo><mml:mi>e</mml:mi><mml:mi>x</mml:mi><mml:mi>p</mml:mi><mml:mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mml:mo><mml:mfrac><mml:msub><mml:mi>a</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:msup><mml:mi>T</mml:mi><mml:mi>b</mml:mi></mml:msup></mml:mfrac><mml:mo>+</mml:mo><mml:msub><mml:mi>a</mml:mi><mml:mn>2</mml:mn></mml:msub><mml:mo stretchy="false" form="postfix">)</mml:mo></mml:mrow></mml:math></alternatives></disp-formula><inline-formula><alternatives><tex-math><![CDATA[T]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mi>T</mml:mi></mml:math></alternatives></inline-formula>は気温（K）、各係数はTable
+    2に示した。なお、このモデルでは、分別係数が不連続になることを防ぐため、-20–0°Cの間で<inline-formula><alternatives><tex-math><![CDATA[\alpha_{eq,vi}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>e</mml:mi><mml:mi>q</mml:mi><mml:mo>,</mml:mo><mml:mi>v</mml:mi><mml:mi>i</mml:mi></mml:mrow></mml:msub></mml:math></alternatives></inline-formula>と<inline-formula><alternatives><tex-math><![CDATA[\alpha_{eq,vl}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>e</mml:mi><mml:mi>q</mml:mi><mml:mo>,</mml:mo><mml:mi>v</mml:mi><mml:mi>l</mml:mi></mml:mrow></mml:msub></mml:math></alternatives></inline-formula>を線形内挿して用いている。</p>
+            <list list-type="bullet">
+              <list-item>
+                <p>
+                  <bold>Table 2</bold>
+                </p>
+              </list-item>
+            </list>
+            <table-wrap>
+              <table>
+                <colgroup>
+                  <col width="52%"/>
+                  <col width="11%"/>
+                  <col width="13%"/>
+                  <col width="16%"/>
+                  <col width="8%"/>
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Process</th>
+                    <th>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[a_1]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:msub>
+                              <mml:mi>a</mml:mi>
+                              <mml:mn>1</mml:mn>
+                            </mml:msub>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </th>
+                    <th>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[a_2]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:msub>
+                              <mml:mi>a</mml:mi>
+                              <mml:mn>2</mml:mn>
+                            </mml:msub>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </th>
+                    <th>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[a_3]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:msub>
+                              <mml:mi>a</mml:mi>
+                              <mml:mn>3</mml:mn>
+                            </mml:msub>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </th>
+                    <th>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[b]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:mi>b</mml:mi>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><inline-formula><alternatives><tex-math><![CDATA[\mathsf{H_2^{18}O}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mrow><mml:msubsup><mml:mi>𝖧</mml:mi><mml:mn>𝟤</mml:mn><mml:mn>𝟣𝟪</mml:mn></mml:msubsup><mml:mi>𝖮</mml:mi></mml:mrow></mml:math></alternatives></inline-formula>
+            (vapor <inline-formula><alternatives><tex-math><![CDATA[\to]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mo>→</mml:mo></mml:math></alternatives></inline-formula>
+            liquid)</td>
+                    <td>1137</td>
+                    <td>-0.4156</td>
+                    <td>-0.002067</td>
+                    <td/>
+                  </tr>
+                  <tr>
+                    <td><inline-formula><alternatives><tex-math><![CDATA[\mathsf{HDO}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mrow><mml:mi>𝖧</mml:mi><mml:mi>𝖣</mml:mi><mml:mi>𝖮</mml:mi></mml:mrow></mml:math></alternatives></inline-formula>
+            (vapor <inline-formula><alternatives><tex-math><![CDATA[\to]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mo>→</mml:mo></mml:math></alternatives></inline-formula>
+            liquid)</td>
+                    <td>24844</td>
+                    <td>-76.248</td>
+                    <td>0.052612</td>
+                    <td/>
+                  </tr>
+                  <tr>
+                    <td><inline-formula><alternatives><tex-math><![CDATA[\mathsf{H_2^{18}O}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mrow><mml:msubsup><mml:mi>𝖧</mml:mi><mml:mn>𝟤</mml:mn><mml:mn>𝟣𝟪</mml:mn></mml:msubsup><mml:mi>𝖮</mml:mi></mml:mrow></mml:math></alternatives></inline-formula>
+            (vapor <inline-formula><alternatives><tex-math><![CDATA[\to]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mo>→</mml:mo></mml:math></alternatives></inline-formula>
+            ice)</td>
+                    <td>11.839</td>
+                    <td>-0.028224</td>
+                    <td/>
+                    <td>1</td>
+                  </tr>
+                  <tr>
+                    <td><inline-formula><alternatives><tex-math><![CDATA[\mathsf{HDO}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mrow><mml:mi>𝖧</mml:mi><mml:mi>𝖣</mml:mi><mml:mi>𝖮</mml:mi></mml:mrow></mml:math></alternatives></inline-formula>
+            (vapor <inline-formula><alternatives><tex-math><![CDATA[\to]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mo>→</mml:mo></mml:math></alternatives></inline-formula>
+            ice)</td>
+                    <td>16289</td>
+                    <td>-0.0945</td>
+                    <td/>
+                    <td>2</td>
+                  </tr>
+                </tbody>
+              </table>
+            </table-wrap>
+          </sec>
+          <sec id="cell-4bc6fee2-3e57-4ef2-bc8f-ac9ef8995d93-nb-1" specific-use="notebook-content">
+  </sec>
+          <sec id="海面からの蒸発時に生じる同位体分別-nb-1">
+            <title>海面からの蒸発時に生じる同位体分別</title>
+          </sec>
+          <sec id="cell-9713b488-9769-4440-8392-405178229b8a-nb-1" specific-use="notebook-content">
+            <p>海面から蒸発が生じる際の同位体分別は、Merlivat and Jouzel
+    (1979)による定式化を利用する。 <disp-formula><alternatives><tex-math><![CDATA[
+        R_E = \alpha_{kin,evap} \frac{R_{sea} / \alpha_{eq} - h R_a}{1 - h}
+    ]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="block"><mml:mrow><mml:msub><mml:mi>R</mml:mi><mml:mi>E</mml:mi></mml:msub><mml:mo>=</mml:mo><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>k</mml:mi><mml:mi>i</mml:mi><mml:mi>n</mml:mi><mml:mo>,</mml:mo><mml:mi>e</mml:mi><mml:mi>v</mml:mi><mml:mi>a</mml:mi><mml:mi>p</mml:mi></mml:mrow></mml:msub><mml:mfrac><mml:mrow><mml:msub><mml:mi>R</mml:mi><mml:mrow><mml:mi>s</mml:mi><mml:mi>e</mml:mi><mml:mi>a</mml:mi></mml:mrow></mml:msub><mml:mi>/</mml:mi><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>e</mml:mi><mml:mi>q</mml:mi></mml:mrow></mml:msub><mml:mo>−</mml:mo><mml:mi>h</mml:mi><mml:msub><mml:mi>R</mml:mi><mml:mi>a</mml:mi></mml:msub></mml:mrow><mml:mrow><mml:mn>1</mml:mn><mml:mo>−</mml:mo><mml:mi>h</mml:mi></mml:mrow></mml:mfrac></mml:mrow></mml:math></alternatives></disp-formula>
+    ここで、<inline-formula><alternatives><tex-math><![CDATA[R_E]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:msub><mml:mi>R</mml:mi><mml:mi>E</mml:mi></mml:msub></mml:math></alternatives></inline-formula>,
+    <inline-formula><alternatives><tex-math><![CDATA[R_{sea}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:msub><mml:mi>R</mml:mi><mml:mrow><mml:mi>s</mml:mi><mml:mi>e</mml:mi><mml:mi>a</mml:mi></mml:mrow></mml:msub></mml:math></alternatives></inline-formula>,<inline-formula><alternatives><tex-math><![CDATA[R_a]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:msub><mml:mi>R</mml:mi><mml:mi>a</mml:mi></mml:msub></mml:math></alternatives></inline-formula>はそれぞれ海面から蒸発した水の同位体比、海水の同位体比（典型的には<inline-formula><alternatives><tex-math><![CDATA[R_{sea}=1]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mrow><mml:msub><mml:mi>R</mml:mi><mml:mrow><mml:mi>s</mml:mi><mml:mi>e</mml:mi><mml:mi>a</mml:mi></mml:mrow></mml:msub><mml:mo>=</mml:mo><mml:mn>1</mml:mn></mml:mrow></mml:math></alternatives></inline-formula>）、海洋上表面の同位体比を表す。
+    また、<inline-formula><alternatives><tex-math><![CDATA[h]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mi>h</mml:mi></mml:math></alternatives></inline-formula>は実効相対湿度（海面水温を基準とした相対湿度）である。
+    <disp-formula><alternatives><tex-math><![CDATA[
+        h = h_a \frac{w_{sat,a}}{w_{sat,sea}}
+    ]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="block"><mml:mrow><mml:mi>h</mml:mi><mml:mo>=</mml:mo><mml:msub><mml:mi>h</mml:mi><mml:mi>a</mml:mi></mml:msub><mml:mfrac><mml:msub><mml:mi>w</mml:mi><mml:mrow><mml:mi>s</mml:mi><mml:mi>a</mml:mi><mml:mi>t</mml:mi><mml:mo>,</mml:mo><mml:mi>a</mml:mi></mml:mrow></mml:msub><mml:msub><mml:mi>w</mml:mi><mml:mrow><mml:mi>s</mml:mi><mml:mi>a</mml:mi><mml:mi>t</mml:mi><mml:mo>,</mml:mo><mml:mi>s</mml:mi><mml:mi>e</mml:mi><mml:mi>a</mml:mi></mml:mrow></mml:msub></mml:mfrac></mml:mrow></mml:math></alternatives></disp-formula>
+    <inline-formula><alternatives><tex-math><![CDATA[h_a, w_{sat,a}, w_{sat,sea}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mrow><mml:msub><mml:mi>h</mml:mi><mml:mi>a</mml:mi></mml:msub><mml:mo>,</mml:mo><mml:msub><mml:mi>w</mml:mi><mml:mrow><mml:mi>s</mml:mi><mml:mi>a</mml:mi><mml:mi>t</mml:mi><mml:mo>,</mml:mo><mml:mi>a</mml:mi></mml:mrow></mml:msub><mml:mo>,</mml:mo><mml:msub><mml:mi>w</mml:mi><mml:mrow><mml:mi>s</mml:mi><mml:mi>a</mml:mi><mml:mi>t</mml:mi><mml:mo>,</mml:mo><mml:mi>s</mml:mi><mml:mi>e</mml:mi><mml:mi>a</mml:mi></mml:mrow></mml:msub></mml:mrow></mml:math></alternatives></inline-formula>はそれぞれ、海洋上表面の相対湿度、海洋上表面の飽和水蒸気量、海面水温を基準とした飽和水蒸気量である。
+    動的分別係数(<inline-formula><alternatives><tex-math><![CDATA[\alpha_{kin,evap}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>k</mml:mi><mml:mi>i</mml:mi><mml:mi>n</mml:mi><mml:mo>,</mml:mo><mml:mi>e</mml:mi><mml:mi>v</mml:mi><mml:mi>a</mml:mi><mml:mi>p</mml:mi></mml:mrow></mml:msub></mml:math></alternatives></inline-formula>)は、</p>
+          </sec>
+          <sec id="cell-96d0f900-bcf4-4ed9-b47c-17810f566d83-nb-1" specific-use="notebook-content">
+            <p>
+              <disp-formula>
+                <alternatives>
+                  <tex-math><![CDATA[
+        \alpha_{kin,evap} = 
+            \begin{cases} 
+                1 - a \quad& (u \lt 7 \ \text{[m/s]}) \\
+                1 - b u + c \quad& (u \ge 7 \ \text{[m/s]})
+            \end{cases}
+    ]]></tex-math>
+                  <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="block">
+                    <mml:mrow>
+                      <mml:msub>
+                        <mml:mi>α</mml:mi>
+                        <mml:mrow>
+                          <mml:mi>k</mml:mi>
+                          <mml:mi>i</mml:mi>
+                          <mml:mi>n</mml:mi>
+                          <mml:mo>,</mml:mo>
+                          <mml:mi>e</mml:mi>
+                          <mml:mi>v</mml:mi>
+                          <mml:mi>a</mml:mi>
+                          <mml:mi>p</mml:mi>
+                        </mml:mrow>
+                      </mml:msub>
+                      <mml:mo>=</mml:mo>
+                      <mml:mrow>
+                        <mml:mo stretchy="true" form="prefix">{</mml:mo>
+                        <mml:mtable>
+                          <mml:mtr>
+                            <mml:mtd columnalign="left" style="text-align: left">
+                              <mml:mn>1</mml:mn>
+                              <mml:mo>−</mml:mo>
+                              <mml:mi>a</mml:mi>
+                              <mml:mspace width="1.0em"/>
+                            </mml:mtd>
+                            <mml:mtd columnalign="left" style="text-align: left">
+                              <mml:mrow>
+                                <mml:mo stretchy="true" form="prefix">(</mml:mo>
+                                <mml:mi>u</mml:mi>
+                                <mml:mo>&lt;</mml:mo>
+                                <mml:mn>7</mml:mn>
+                                <mml:mspace width="0.222em"/>
+                                <mml:mtext mathvariant="normal">[m/s]</mml:mtext>
+                                <mml:mo stretchy="true" form="postfix">)</mml:mo>
+                              </mml:mrow>
+                            </mml:mtd>
+                          </mml:mtr>
+                          <mml:mtr>
+                            <mml:mtd columnalign="left" style="text-align: left">
+                              <mml:mn>1</mml:mn>
+                              <mml:mo>−</mml:mo>
+                              <mml:mi>b</mml:mi>
+                              <mml:mi>u</mml:mi>
+                              <mml:mo>+</mml:mo>
+                              <mml:mi>c</mml:mi>
+                              <mml:mspace width="1.0em"/>
+                            </mml:mtd>
+                            <mml:mtd columnalign="left" style="text-align: left">
+                              <mml:mrow>
+                                <mml:mo stretchy="true" form="prefix">(</mml:mo>
+                                <mml:mi>u</mml:mi>
+                                <mml:mo>≥</mml:mo>
+                                <mml:mn>7</mml:mn>
+                                <mml:mspace width="0.222em"/>
+                                <mml:mtext mathvariant="normal">[m/s]</mml:mtext>
+                                <mml:mo stretchy="true" form="postfix">)</mml:mo>
+                              </mml:mrow>
+                            </mml:mtd>
+                          </mml:mtr>
+                        </mml:mtable>
+                      </mml:mrow>
+                    </mml:mrow>
+                  </mml:math>
+                </alternatives>
+              </disp-formula>
+            </p>
+          </sec>
+          <sec id="cell-1f3231b3-2092-4a8a-94ff-0a725d2e2805-nb-1" specific-use="notebook-content">
+            <p>ここで、<inline-formula><alternatives><tex-math><![CDATA[u]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mi>u</mml:mi></mml:math></alternatives></inline-formula>
+    は海洋表面での風速、各係数はTable
+    3に示した。なお、このモデルでは、<inline-formula><alternatives><tex-math><![CDATA[u<7]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mrow><mml:mi>u</mml:mi><mml:mo>&lt;</mml:mo><mml:mn>7</mml:mn></mml:mrow></mml:math></alternatives></inline-formula>と仮定して得られた<inline-formula><alternatives><tex-math><![CDATA[\alpha_{kin,evap}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>k</mml:mi><mml:mi>i</mml:mi><mml:mi>n</mml:mi><mml:mo>,</mml:mo><mml:mi>e</mml:mi><mml:mi>v</mml:mi><mml:mi>a</mml:mi><mml:mi>p</mml:mi></mml:mrow></mml:msub></mml:math></alternatives></inline-formula>を用いている。</p>
+            <list list-type="bullet">
+              <list-item>
+                <p><bold>Table 3</bold>: 各係数はMerilivat (1978) に基づく</p>
+              </list-item>
+            </list>
+            <table-wrap>
+              <table>
+                <colgroup>
+                  <col width="57%"/>
+                  <col width="12%"/>
+                  <col width="14%"/>
+                  <col width="17%"/>
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th>Process</th>
+                    <th>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[a]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:mi>a</mml:mi>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </th>
+                    <th>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[b]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:mi>b</mml:mi>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </th>
+                    <th>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[c]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:mi>c</mml:mi>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[\mathsf{H_2^{18}O}]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:mrow>
+                              <mml:msubsup>
+                                <mml:mi>𝖧</mml:mi>
+                                <mml:mn>𝟤</mml:mn>
+                                <mml:mn>𝟣𝟪</mml:mn>
+                              </mml:msubsup>
+                              <mml:mi>𝖮</mml:mi>
+                            </mml:mrow>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </td>
+                    <td>0.006</td>
+                    <td>0.000285</td>
+                    <td>0.00082</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <inline-formula>
+                        <alternatives>
+                          <tex-math><![CDATA[\mathsf{HDO}]]></tex-math>
+                          <mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline">
+                            <mml:mrow>
+                              <mml:mi>𝖧</mml:mi>
+                              <mml:mi>𝖣</mml:mi>
+                              <mml:mi>𝖮</mml:mi>
+                            </mml:mrow>
+                          </mml:math>
+                        </alternatives>
+                      </inline-formula>
+                    </td>
+                    <td>0.00528</td>
+                    <td>0.0002508</td>
+                    <td>0.0007216</td>
+                  </tr>
+                </tbody>
+              </table>
+            </table-wrap>
+          </sec>
+          <sec id="cell-9763d3ef-6690-4f94-8892-b85e97f6f8ed-nb-1" specific-use="notebook-content">
+  </sec>
+          <sec id="低温での過飽和時に生じる同位体分別-nb-1">
+            <title>低温での過飽和時に生じる同位体分別</title>
+            <p>-20 °C以下で水蒸気から氷晶が形成する際の同位体分別は、Jouzel and
+    Merlivat (1984)に倣う。 <disp-formula><alternatives><tex-math><![CDATA[
+        \alpha_{eff} = \alpha_{kin,supersat} \alpha_{eq}
+    ]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="block"><mml:mrow><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>e</mml:mi><mml:mi>f</mml:mi><mml:mi>f</mml:mi></mml:mrow></mml:msub><mml:mo>=</mml:mo><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>k</mml:mi><mml:mi>i</mml:mi><mml:mi>n</mml:mi><mml:mo>,</mml:mo><mml:mi>s</mml:mi><mml:mi>u</mml:mi><mml:mi>p</mml:mi><mml:mi>e</mml:mi><mml:mi>r</mml:mi><mml:mi>s</mml:mi><mml:mi>a</mml:mi><mml:mi>t</mml:mi></mml:mrow></mml:msub><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>e</mml:mi><mml:mi>q</mml:mi></mml:mrow></mml:msub></mml:mrow></mml:math></alternatives></disp-formula>
+    ここで、<inline-formula><alternatives><tex-math><![CDATA[\alpha_{eff}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>e</mml:mi><mml:mi>f</mml:mi><mml:mi>f</mml:mi></mml:mrow></mml:msub></mml:math></alternatives></inline-formula>は実効同位体分別係数である。動的分別係数(<inline-formula><alternatives><tex-math><![CDATA[\alpha_{kin,supersat}]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>k</mml:mi><mml:mi>i</mml:mi><mml:mi>n</mml:mi><mml:mo>,</mml:mo><mml:mi>s</mml:mi><mml:mi>u</mml:mi><mml:mi>p</mml:mi><mml:mi>e</mml:mi><mml:mi>r</mml:mi><mml:mi>s</mml:mi><mml:mi>a</mml:mi><mml:mi>t</mml:mi></mml:mrow></mml:msub></mml:math></alternatives></inline-formula>)は、以下の通り。
+    <disp-formula><alternatives><tex-math><![CDATA[
+        \alpha_{kin,supersat} = \frac{S}{\alpha_{eq} (D / D') (S - 1) + 1}
+    ]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="block"><mml:mrow><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>k</mml:mi><mml:mi>i</mml:mi><mml:mi>n</mml:mi><mml:mo>,</mml:mo><mml:mi>s</mml:mi><mml:mi>u</mml:mi><mml:mi>p</mml:mi><mml:mi>e</mml:mi><mml:mi>r</mml:mi><mml:mi>s</mml:mi><mml:mi>a</mml:mi><mml:mi>t</mml:mi></mml:mrow></mml:msub><mml:mo>=</mml:mo><mml:mfrac><mml:mi>S</mml:mi><mml:mrow><mml:msub><mml:mi>α</mml:mi><mml:mrow><mml:mi>e</mml:mi><mml:mi>q</mml:mi></mml:mrow></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>D</mml:mi><mml:mi>/</mml:mi><mml:mi>D</mml:mi><mml:mi>′</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>S</mml:mi><mml:mo>−</mml:mo><mml:mn>1</mml:mn><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>+</mml:mo><mml:mn>1</mml:mn></mml:mrow></mml:mfrac></mml:mrow></mml:math></alternatives></disp-formula>
+    ここで、<inline-formula><alternatives><tex-math><![CDATA[D,D']]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mrow><mml:mi>D</mml:mi><mml:mo>,</mml:mo><mml:mi>D</mml:mi><mml:mi>′</mml:mi></mml:mrow></mml:math></alternatives></inline-formula>はそれぞれ通常の水分子と同位体水分子の分子拡散係数(Table
+    3)である。<inline-formula><alternatives><tex-math><![CDATA[S]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mi>S</mml:mi></mml:math></alternatives></inline-formula>は氷に対する過飽和度で、
+    <disp-formula><alternatives><tex-math><![CDATA[
+        S = 
+            \begin{cases}
+                1 \quad& (T \ge -20 \ \text{[°C]}) \\
+                1 - 0.003 T \quad& (T \lt -20 \ \text{[°C]})
+            \end{cases}
+    ]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="block"><mml:mrow><mml:mi>S</mml:mi><mml:mo>=</mml:mo><mml:mrow><mml:mo stretchy="true" form="prefix">{</mml:mo><mml:mtable><mml:mtr><mml:mtd columnalign="left" style="text-align: left"><mml:mn>1</mml:mn><mml:mspace width="1.0em"/></mml:mtd><mml:mtd columnalign="left" style="text-align: left"><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>T</mml:mi><mml:mo>≥</mml:mo><mml:mi>−</mml:mi><mml:mn>20</mml:mn><mml:mspace width="0.222em"/><mml:mtext mathvariant="normal">[°C]</mml:mtext><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mtd></mml:mtr><mml:mtr><mml:mtd columnalign="left" style="text-align: left"><mml:mn>1</mml:mn><mml:mo>−</mml:mo><mml:mn>0.003</mml:mn><mml:mi>T</mml:mi><mml:mspace width="1.0em"/></mml:mtd><mml:mtd columnalign="left" style="text-align: left"><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>T</mml:mi><mml:mo>&lt;</mml:mo><mml:mi>−</mml:mi><mml:mn>20</mml:mn><mml:mspace width="0.222em"/><mml:mtext mathvariant="normal">[°C]</mml:mtext><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mtd></mml:mtr></mml:mtable></mml:mrow></mml:mrow></mml:math></alternatives></disp-formula>
+    と表される。<inline-formula><alternatives><tex-math><![CDATA[T]]></tex-math><mml:math xmlns:mml="http://www.w3.org/1998/Math/MathML" display="inline"><mml:mi>T</mml:mi></mml:math></alternatives></inline-formula>は気温（°C）である。なお、このモデルでは、分別係数が不連続になることを防ぐため、Ciais
+    and Jouzel
+    (1994)に従って-20–0°Cの間で分別係数をスムージング（線形内挿）して用いている。</p>
+          </sec>
+        </sec>
+      </sec>
+    </body>
+    <back>
+</back>
+  </sub-article>
+</article>

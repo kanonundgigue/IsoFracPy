@@ -1,0 +1,23 @@
+project:
+  type: manuscript
+
+manuscript:
+  article: index.qmd
+  notebooks: [basics.ipynb]
+
+format:
+  html:
+    theme: dark
+    comments:
+      hypothesis: true
+  docx: default
+  jats: default
+
+  # (other formats)
+  # pdf: default
+
+execute:
+  freeze: auto
+
+
+

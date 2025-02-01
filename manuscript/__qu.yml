@@ -1,0 +1,13 @@
+title: "My Document"
+author: "Kanon Kino"
+toc: true
+number-sections: true
+default-image-extension: png
+link-citations: true
+date-format: "long"
+lang: en
+format:
+  html:
+    theme: [dark, sandstone]
+    code-fold: true
+    math: mathjax

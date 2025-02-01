@@ -23,7 +23,7 @@ from .EquilibriumFractionation import (
 # Kinetic fractionation factor calculations
 from .KineticFractionation import (
     kin_frac_factor_sea_evap,
-    kin_frac_factor_supersat_ice,
+    kin_frac_factor_ice,
     plot_kin_frac_factor,
 )
 
@@ -43,7 +43,7 @@ from .InitialCondition import (
 
 # Prepare isotope fractionation factors
 from .PrepareIsotopeFractionationFactors import (
-    interp_alpha_kin_supersat_ice,
+    interp_alpha_kin_ice,
     prepare_frac_factors,
 )
 # Rayleigh distillation calculations 

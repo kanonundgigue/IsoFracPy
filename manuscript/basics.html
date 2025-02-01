@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Description of IsoFraPy</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="basics_files/libs/clipboard/clipboard.min.js"></script>
+<script src="basics_files/libs/quarto-html/quarto.js"></script>
+<script src="basics_files/libs/quarto-html/popper.min.js"></script>
+<script src="basics_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="basics_files/libs/quarto-html/anchor.min.js"></script>
+<link href="basics_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="basics_files/libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="basics_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="basics_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="basics_files/libs/bootstrap/bootstrap-def314685997ae775ed87effcd90cd1a.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="basics_files/libs/quarto-diagram/mermaid.min.js"></script>
+<script src="basics_files/libs/quarto-diagram/mermaid-init.js"></script>
+<link href="basics_files/libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Description of IsoFraPy</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="定式化" class="level1">
+<h1>定式化</h1>
+<section id="レイリープロセスによる同位体分別" class="level2">
+<h2 class="anchored" data-anchor-id="レイリープロセスによる同位体分別">レイリープロセスによる同位体分別</h2>
+<section id="レイリーの式" class="level3">
+<h3 class="anchored" data-anchor-id="レイリーの式">レイリーの式</h3>
+<p>レイリープロセスにはWorden et al.&nbsp;(2007)の定式化を用いる。水蒸気は常に飽和状態にあると仮定し、気温 <span class="math inline">\(T\)</span> が <span class="math inline">\(dT\)</span> 低下するごとに水蒸気量 (<span class="math inline">\(q\)</span>) とデルタ値 (<span class="math inline">\(\delta = R - 1\)</span>) の変化を陽解法で求める。</p>
+<p><span class="math display">\[
+    \delta_{n+1} = \frac{\alpha_{eq} - 1}{q_n} dq + \delta_n
+\]</span></p>
+<p>ここで、<span class="math inline">\(dq\)</span> は <span class="math inline">\(q_n\)</span> から <span class="math inline">\(q_{n+1}\)</span> への変化として表せる。</p>
+<p><span class="math display">\[
+    dq = q_{n+1} - q_n
+\]</span></p>
+</section>
+<section id="飽和水蒸気圧" class="level3">
+<h3 class="anchored" data-anchor-id="飽和水蒸気圧">飽和水蒸気圧</h3>
+<p>飽和水蒸気圧 (<span class="math inline">\(e_s\)</span>) は、Sonntag (1990) の式を用いて求める。</p>
+<p><span class="math display">\[
+    e_s \ \text{ [hPa]}= \exp \left( \frac{a}{T} + b + cT + dT^2 + e \ln(T) \right) / 100
+\]</span></p>
+<p>各係数は <strong>Table 1</strong> に示す。このモデルでは、水と氷の飽和水蒸気圧を 0 °C で切り替える。</p>
+<section id="table-1-飽和水蒸気圧の係数-sonntag-1990" class="level4">
+<h4 class="anchored" data-anchor-id="table-1-飽和水蒸気圧の係数-sonntag-1990">Table 1: 飽和水蒸気圧の係数 (Sonntag, 1990)</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 10%">
+<col style="width: 15%">
+<col style="width: 16%">
+<col style="width: 19%">
+<col style="width: 19%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Phase</th>
+<th><span class="math inline">\(a\)</span></th>
+<th><span class="math inline">\(b\)</span></th>
+<th><span class="math inline">\(c\)</span></th>
+<th><span class="math inline">\(d\)</span></th>
+<th><span class="math inline">\(e\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Liquid</td>
+<td>-6096.9385</td>
+<td>21.2409642</td>
+<td>-2.711193e-2</td>
+<td>1.673952e-5</td>
+<td>2.433502</td>
+</tr>
+<tr class="even">
+<td>Ice</td>
+<td>-6024.5282</td>
+<td>29.32707</td>
+<td>1.0613868e-2</td>
+<td>-1.3198825e-5</td>
+<td>-0.49382577</td>
+</tr>
+</tbody>
+</table>
+<p>飽和水蒸気圧 (<span class="math inline">\(e_s\)</span>) は飽和混合比 (<span class="math inline">\(w_s\)</span>) に変換できる。</p>
+<p><span class="math display">\[
+    w_s = \epsilon \frac{e_s}{P}
+\]</span></p>
+<p>ここで、<span class="math inline">\(\epsilon\)</span> は水と空気の平均分子量の比、<span class="math inline">\(P\)</span> は標準気圧 (1013 hPa) である。 また、混合比 (<span class="math inline">\(w\)</span>) は比湿 (<span class="math inline">\(q\)</span>) に変換できる。</p>
+<p><span class="math display">\[
+    q = \frac{q}{1 + w}
+\]</span></p>
+</section>
+</section>
+<section id="平衡分別係数" class="level3">
+<h3 class="anchored" data-anchor-id="平衡分別係数">平衡分別係数</h3>
+<p>水同位体の平衡分別係数 (<span class="math inline">\(\alpha_{eq}\)</span>) は、Majoube (1971a; 1971b) の経験式を用いる。</p>
+<p><span class="math display">\[
+    \alpha_{eq,vl} = \exp \left( \frac{a_1}{T^2} + \frac{a_2}{T} + a_3 \right)
+\]</span></p>
+<p><span class="math display">\[
+    \alpha_{eq,vi} = \exp \left( \frac{a_1}{T^{b}} + a_2 \right)
+\]</span></p>
+<p>各係数は <strong>Table 2</strong> に示す。不連続を防ぐため、<span class="math inline">\(-20\)</span>–<span class="math inline">\(0\)</span> °C では <span class="math inline">\(\alpha_{eq,vi}\)</span> と <span class="math inline">\(\alpha_{eq,vl}\)</span> を線形内挿する。</p>
+<section id="table-2-平衡分別係数の係数-majoube-1971" class="level4">
+<h4 class="anchored" data-anchor-id="table-2-平衡分別係数の係数-majoube-1971">Table 2: 平衡分別係数の係数 (Majoube, 1971)</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 51%">
+<col style="width: 10%">
+<col style="width: 13%">
+<col style="width: 15%">
+<col style="width: 8%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Process</th>
+<th><span class="math inline">\(a_1\)</span></th>
+<th><span class="math inline">\(a_2\)</span></th>
+<th><span class="math inline">\(a_3\)</span></th>
+<th><span class="math inline">\(b\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\mathsf{H_2^{18}O}\)</span> (vapor <span class="math inline">\(\to\)</span> liquid)</td>
+<td>1137</td>
+<td>-0.4156</td>
+<td>-0.002067</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathsf{HDO}\)</span> (vapor <span class="math inline">\(\to\)</span> liquid)</td>
+<td>24844</td>
+<td>-76.248</td>
+<td>0.052612</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\mathsf{H_2^{18}O}\)</span> (vapor <span class="math inline">\(\to\)</span> ice)</td>
+<td>11.839</td>
+<td>-0.028224</td>
+<td></td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathsf{HDO}\)</span> (vapor <span class="math inline">\(\to\)</span> ice)</td>
+<td>16289</td>
+<td>-0.0945</td>
+<td></td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+</section>
+<section id="海面からの蒸発時に生じる同位体分別" class="level2">
+<h2 class="anchored" data-anchor-id="海面からの蒸発時に生じる同位体分別">海面からの蒸発時に生じる同位体分別</h2>
+<p>海面からの蒸発に伴う同位体分別は、Merlivat and Jouzel (1979) の定式化を用いる。</p>
+<p><span class="math display">\[
+    R_E = \alpha_{kin,evap} \frac{R_{sea} / \alpha_{eq} - h R_a}{1 - h}
+\]</span></p>
+<p>ここで、<span class="math inline">\(R_E\)</span> は蒸発した水の同位体比、<span class="math inline">\(h\)</span> は実効相対湿度で、</p>
+<p><span class="math display">\[
+    h = h_a \frac{w_{sat,a}}{w_{sat,sea}}
+\]</span></p>
+<p>動的分別係数 (<span class="math inline">\(\alpha_{kin,evap}\)</span>) は以下のように求める。</p>
+<p><span class="math display">\[
+    \alpha_{kin,evap} =
+        \begin{cases}
+            1 - a       \quad&amp; (u &lt;   7 \ \text{[m/s]}) \\
+            1 - b u + c \quad&amp; (u \ge 7 \ \text{[m/s]})
+        \end{cases}
+\]</span></p>
+<p>本モデルでは、<span class="math inline">\(u&lt;7\)</span> の場合の <span class="math inline">\(\alpha_{kin,evap}\)</span> を使用する。</p>
+<section id="table-3-動的分別係数の係数-merilivat-1978" class="level4">
+<h4 class="anchored" data-anchor-id="table-3-動的分別係数の係数-merilivat-1978">Table 3: 動的分別係数の係数 (Merilivat, 1978)</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Process</th>
+<th><span class="math inline">\(a\)</span></th>
+<th><span class="math inline">\(b\)</span></th>
+<th><span class="math inline">\(c\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\mathsf{H_2^{18}O}\)</span></td>
+<td>0.006</td>
+<td>0.000285</td>
+<td>0.00082</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\mathsf{HDO}\)</span></td>
+<td>0.00528</td>
+<td>0.0002508</td>
+<td>0.0007216</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="低温での水蒸気が過飽和になった時に生じる同位体分別" class="level2">
+<h2 class="anchored" data-anchor-id="低温での水蒸気が過飽和になった時に生じる同位体分別">低温での水蒸気が過飽和になった時に生じる同位体分別</h2>
+<p><span class="math inline">\(-20\)</span> °C 以下での氷晶形成時の同位体分別は、Jouzel and Merlivat (1984) に従う。</p>
+<p><span class="math display">\[
+    \alpha_{eff} = \alpha_{kin,supersat} \cdot \alpha_{eq}
+\]</span></p>
+<p>動的分別係数 (<span class="math inline">\(\alpha_{kin,supersat}\)</span>) は以下で表される。</p>
+<p><span class="math display">\[
+    \alpha_{kin,supersat} = \frac{S}{\alpha_{eq} (D / D') (S - 1) + 1}
+\]</span></p>
+<p><span class="math inline">\(S\)</span> は氷に対する過飽和度で、</p>
+<p><span class="math display">\[
+    S =
+        \begin{cases}
+            1 \quad&amp; (T \ge -20 \ \text{[°C]}) \\
+            1 - 0.003 T \quad&amp; (T &lt; -20 \ \text{[°C]})
+        \end{cases}
+\]</span></p>
+<p><span class="math inline">\(-20\)</span>–<span class="math inline">\(0\)</span> °C の間では、Ciais and Jouzel (1994) に従い分別係数を線形内挿する。</p>
+</section>
+<section id="ポストプロセス最終地点における降雪からの昇華" class="level2">
+<h2 class="anchored" data-anchor-id="ポストプロセス最終地点における降雪からの昇華">ポストプロセス：最終地点における降雪からの昇華</h2>
+<p>最終地点における降雪量 (<span class="math inline">\(Sn\)</span>) は、地表付近の相対湿度に基づいたパラメタリゼーションによって表現する。具体的には、降雪が全て昇華した際に地表付近（気温<span class="math inline">\(T_{surf}\)</span>, 水蒸気量<span class="math inline">\(q_{surf}\)</span>）の相対湿度 (<span class="math inline">\(h_{surf}\)</span>) を <span class="math inline">\(dh\)</span> だけ増加させるような量の降雪が上空で生じると仮定する。</p>
+<p><span class="math display">\[
+    Sn = q_{surf} \frac{dh}{h_{surf}}
+\]</span></p>
+<p>この時、雪の同位体比は、最終地点における上空の水蒸気の同位体比から求められる。</p>
+<p><span class="math display">\[
+    R_{Sn} = (R_{v,final} + 1) \alpha_{final} - 1
+\]</span></p>
+<p><span class="math inline">\(Sn\)</span>のうち、割合<span class="math inline">\(f\)</span>が昇華により地表付近の大気に戻されるとすると、その量 (<span class="math inline">\(q_{sub}\)</span>) は、</p>
+<p><span class="math display">\[
+    q_{sub} = Sn \cdot f
+\]</span></p>
+<p>このとき、地表付近の水蒸気量は、次のように更新される。</p>
+<p><span class="math display">\[
+    q_{surf, updated} = q_{surf} + q_{sub}
+\]</span></p>
+<p>また、地表付近の水蒸気の同位体比は、次のように更新される。</p>
+<p><span class="math display">\[
+    R_{surf, updated} = \frac{q_{surf} R_{surf} + q_{sub} R_{sub}}{q_{surf, updated}}
+\]</span></p>
+</section>
+</section>
+<section id="全体のフロー" class="level1">
+<h1>全体のフロー</h1>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    A[海面からの蒸発] --&gt; B[レイリー蒸留] 
+    B --&gt; C[降雪からの昇華]
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

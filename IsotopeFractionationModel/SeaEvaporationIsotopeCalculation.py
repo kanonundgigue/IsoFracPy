@@ -164,7 +164,7 @@ def initial_sea_evap_fractionation(
     alpha_kin: float, 
     alpha_eql: float, 
     h_air: float = 1,
-    R_sea: float = 1
+    R_sea: float = 1,
 ) -> float:
     """
     Calculate the initial isotope ratio of evaporated air.
@@ -185,4 +185,5 @@ def initial_sea_evap_fractionation(
     - The main equation was modified after Merlivat and Jouzel (1979).
     """
     h_eff = effective_humidity(w_sat_air, w_sat_sea, h_air)
+
     return alpha_kin * R_sea / alpha_eql / (1 - h_eff + h_eff * alpha_kin)
