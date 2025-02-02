@@ -16,12 +16,15 @@ from .BasicUtility import (
 from .EquilibriumFractionation import (
     combine_alpha_eq,
     eq_frac_factor,
+    get_params_eq,
     prepare_combined_alpha_eq,
     plot_eq_frac_factor,
 )
 
 # Kinetic fractionation factor calculations
 from .KineticFractionation import (
+    get_params_kin_sea_evap,
+    get_params_dif_rat,
     kin_frac_factor_sea_evap,
     kin_frac_factor_ice,
     plot_kin_frac_factor,

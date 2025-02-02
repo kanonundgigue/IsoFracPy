@@ -39,6 +39,7 @@ def interp_alpha_kin_ice(alpha_kin_list, invalid_thres: float = 1) -> list:
     alpha_kin_array[-1] = invalid_thres  # Assuming the ascending order of temperature
     alpha_kin_array = pd.Series(alpha_kin_array).interpolate(method="linear").to_numpy()
     return alpha_kin_array.tolist()
+
 def prepare_frac_factors(
     temp_list: list, 
     temp_thres_min: float = -20,
@@ -72,8 +73,6 @@ def prepare_frac_factors(
     ]
 
     return {
-        # "alpha_eqi": alpha_eqi_list,
-        # "alpha_eql": alpha_eql_list,
         "alpha_eq": alpha_eq_list,
         "alpha_kin": alpha_kin_list,
         "alpha_eff": alpha_eff_list,

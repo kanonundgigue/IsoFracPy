@@ -61,7 +61,24 @@ def combine_alpha_eq(
 
     # Return the interpolated values as a list
     return alpha_eq_array.tolist()
-    
+
+def get_params_eq(ISO_TYPE: str, PHASE_TYPE: str):
+    """
+    References:
+    - This function provide parameters used in the empirical equations of Majoube (1971a, 1971b).
+    """
+    params_dict = {
+        "H218O": {
+            "vl": [1137, -0.4156, -0.002067],
+            "vi": [0, 11.839, -0.028224],
+        },
+        "HDO": {
+            "vl": [24844, -76.248, 0.052612],        
+            "vi": [16289, 0, -0.0945]
+        },
+    } 
+    return params_dict[ISO_TYPE][PHASE_TYPE]     
+
 def eq_frac_factor(
     temp_C: float,                                             
     ISO_TYPE: str = "HDO", 
@@ -95,21 +112,8 @@ def eq_frac_factor(
     check_validity(PHASE_TYPE, phase_type_list, "PHASE_TYPE")
 
     temp = temp_C + temp0_K
-    
-    params_dict = {
-        "H218O": {
-            "vl": [1137, -0.4156, -0.002067],
-            "vi": [0, 11.839, -0.028224],
-        },
-        "HDO": {
-            "vl": [24844, -76.248, 0.052612],        
-            "vi": [16289, 0, -0.0945]
-        },
-    }    
-   
-    a1, a2, a3 = params_dict[ISO_TYPE][PHASE_TYPE]        
-    alpha =  np.exp(a1 / temp**2 + a2 / temp + a3)
-    
+    a1, a2, a3 = get_params_eq(ISO_TYPE, PHASE_TYPE)   
+    alpha =  np.exp(a1 / temp**2 + a2 / temp + a3)  
 
     return alpha
 
@@ -145,14 +149,14 @@ def prepare_combined_alpha_eq(
     """
     check_validity(ISO_TYPE, iso_type_list, "ISO_TYPE")
     
-    alpha_eqi_list = [
-        eq_frac_factor(temp, ISO_TYPE=ISO_TYPE, PHASE_TYPE="vi")
-        for temp in temp_list
-    ]
-    alpha_eql_list = [
-        eq_frac_factor(temp, ISO_TYPE=ISO_TYPE, PHASE_TYPE="vl")
-        for temp in temp_list
-    ]
+    def _get_alpha_list(PHASE_TYPE):
+        return [
+            eq_frac_factor(temp, ISO_TYPE=ISO_TYPE, PHASE_TYPE=PHASE_TYPE)
+            for temp in temp_list
+        ]
+    
+    alpha_eqi_list = _get_alpha_list("vi")
+    alpha_eql_list = _get_alpha_list("vl")
     
     alpha_eq_list = combine_alpha_eq(
         temp_list, alpha_eqi_list, alpha_eql_list, 

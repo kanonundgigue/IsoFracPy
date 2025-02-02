@@ -2,7 +2,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
+from matpltlib.gridspec import GridSpec
 from .config import *
     
 def check_validity(value, valid_values: list, value_name: str):

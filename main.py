@@ -17,7 +17,6 @@ def configure_model():
     - dict: Dictionary containing model parameters.
     """
     config_dict = {
-        ## いじる必要のないパラメータ
         "ISO_TYPE": "HDO",  # Isotope type to simulate. Options are "HDO" or "H218O".
         "dt": 0.5,  # Temperature step size for the simulation [°C].
         "h_air": 1,

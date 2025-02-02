@@ -9,6 +9,13 @@ from .config import *
 from .BasicUtility import check_validity
 from .EquilibriumFractionation import eq_frac_factor
     
+def get_params_kin_sea_evap(ISO_TYPE):
+    params_dict = {
+        "H218O": [0.006, 0.000285, 0.00082],
+        "HDO": [0.00528, 0.0002508, 0.0007216] 
+    } # Coefficients from Merlivat (1978)
+    return params_dict[ISO_TYPE]
+
 def kin_frac_factor_sea_evap(
     temp_C: float, 
     ISO_TYPE: str = "HDO", 
@@ -40,12 +47,6 @@ def kin_frac_factor_sea_evap(
     """
 
     check_validity(ISO_TYPE, iso_type_list, "ISO_TYPE")
-    
-    params_dict = {
-        "H218O": [0.006, 0.000285, 0.00082],
-        "HDO": [0.00528, 0.0002508, 0.0007216] 
-    } # Coefficients from Merlivat (1978)
-
 
     if surface_wind is None:
         surface_wind = 6.5
@@ -54,13 +55,20 @@ def kin_frac_factor_sea_evap(
             "is used.", UserWarning
         )
         
-    a1, a2, a3 = params_dict[ISO_TYPE]
+    a1, a2, a3 = get_params_kin_sea_evap(ISO_TYPE)
 
     if surface_wind < 7:
         return 1 - a1
     else:
         return 1 - (a2 * surface_wind + a3)
-        
+
+def get_params_dif_rat(ISO_TYPE, DIFFUSION_REF):
+    params_dict = {
+        "H218O": {"M78": 1.02849, "C03": 1.03189},
+        "HDO": {"M78": 1.02512, "C03": 1.01636}
+        }
+    return params_dict[ISO_TYPE][DIFFUSION_REF]
+
 def kin_frac_factor_ice(
     temp_C: float, 
     ice_param: float = 0.003, 
@@ -96,20 +104,15 @@ def kin_frac_factor_ice(
     check_validity(ISO_TYPE, iso_type_list, "ISO_TYPE")
     check_validity(DIFFUSION_REF, diffusion_ref_list, "DIFFUSION_REF")
     
-    params_dict = {
-        "H218O": {"M78": 1.02849, "C03": 1.03189},
-        "HDO": {"M78": 1.02512, "C03": 1.01636}
-        }
-
-    DD = params_dict[ISO_TYPE][DIFFUSION_REF]
+    DD = get_params_dif_rat(ISO_TYPE, DIFFUSION_REF)
     
     S = 1 if temp_C >= temp_thres else 1 - ice_param * temp_C
 
-    alpha_eql = eq_frac_factor(
+    alpha_eqi = eq_frac_factor(
         temp_C, ISO_TYPE = ISO_TYPE, PHASE_TYPE = "vi"
     )
 
-    alpha_kin = S / (alpha_eql * DD * (S - 1) + 1)
+    alpha_kin = S / (alpha_eqi * DD * (S - 1) + 1)
 
     return alpha_kin
 

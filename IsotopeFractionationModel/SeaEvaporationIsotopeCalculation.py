@@ -54,11 +54,11 @@ def prepare_mixing_ratio(
     - tuple: Two lists containing saturated mixing ratios for air and sea
       (both in g/kg).
     """
-    def get_w_list(temp_list):
+    def _get_w_list(temp_list):
         return [sat_mixing_ratio(temp) for temp in temp_list]
 
-    w_sat_air_list = get_w_list(temp_air_list)
-    w_sat_sea_list = get_w_list(temp_sea_list)
+    w_sat_air_list = _get_w_list(temp_air_list)
+    w_sat_sea_list = _get_w_list(temp_sea_list)
 
     return w_sat_air_list, w_sat_sea_list
 

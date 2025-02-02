@@ -15,17 +15,20 @@ from .KineticFractionation import (
     kin_frac_factor_ice,
 )
 from .SeaEvaporationIsotopeCalculation import initial_sea_evap_fractionation
-
 from .InitialCondition import get_init_conditions
 
-def adjust_alpha_raindrop_evap(alpha: float, alpha_kin: float, reevap_factor: float) -> float:
+def adjust_alpha_raindrop_evap(
+    alpha_con: float, 
+    alpha_evap: float = 1.098, 
+    reevap_factor: float = 0.5,
+) -> float:
     """
     Adjust fractionation factor considering raindrop evaporation.
 
     Parameters:
-    - alpha (float): Effective fractionation factor (ND).
-    - alpha_kin (float): Kinetic fractionation factor (ND).
-    - reevap_factor (float): Re-evaporation factor (0–1).
+    - alpha_con (float): Equilibrium fractionation factor for condensation(ND).
+    - alpha_evap (float): Effective fractionation factor for re-evaporation(ND). Default value is 1.098 (following after Worden et al. 2007).
+    - reevap_factor (float): Re-evaporation factor (0–1). Default value is 0.5
 
     Methods:
     - Adjust the fractionation factor to account for isotopic effects due to
@@ -37,9 +40,7 @@ def adjust_alpha_raindrop_evap(alpha: float, alpha_kin: float, reevap_factor: fl
     References
     - Worden et al. 2007, Eq. 4.14.
     """    
-    # alpha_e = alpha_kin
-    alpha_e = 1.098
-    return alpha * (1 - reevap_factor / alpha_e) / (1 - reevap_factor)
+    return alpha_con * (1 - reevap_factor / alpha_evap) / (1 - reevap_factor)
 
 def rayleigh_process(
     temp_init: float, 
@@ -61,7 +62,7 @@ def rayleigh_process(
     - temp_fin (float): Final temperature (°C).
     - q_init (float): Initial specific humidity (g/kg).
     - delta_init (float): Initial delta value in ratio (ex., X'/X - 1 [ND]).
-    - alpha_eff_list (list): List of effective fractionation factors.
+    - alpha_eff_list (list): List of effective fractionation factors for condensation.
     - temp_default_list (list): List of default temperatures for interpolation.
     - reevap_factor (float): Re-evaporation factor. Default is 0.5.
     - BOOL_REEVAP (bool): Whether to consider re-evaporation. Default is True.
@@ -84,7 +85,6 @@ def rayleigh_process(
     - Worden et al. (2007).
 
     """
-
     validate_rayleigh_inputs(temp_init, temp_fin, q_init)
     
     temp_rayleigh_list = np.arange(temp_init, temp_fin, -np.abs(dt))
@@ -99,11 +99,10 @@ def rayleigh_process(
 
         idx = np.nanargmin(np.abs(temp_default_list - temp))
         alpha = alpha_eff_list[idx]
-        alpha_kin =  alpha_kin_list[idx]
 
         if temp >= 0 and BOOL_REEVAP == True:
             # Re-evaporation from raindrop            
-            alpha = adjust_alpha_raindrop_evap(alpha, alpha_kin, reevap_factor)
+            alpha = adjust_alpha_raindrop_evap(alpha, reevap_factor=reevap_factor)
             
         delta_list[i] = rayleigh_step(alpha, q_list[i - 1], dq, delta_list[i - 1])
         
