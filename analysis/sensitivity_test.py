@@ -8,8 +8,9 @@ import itertools
 # Original modules
 from save_figure_with_confirmation import save_figure_with_confirmation as save_fig
 
-path_for_repo=f"/data37/kanon/modern_model_comparison"
-iso_model_dir = pathlib.Path(f"{path_for_repo}/scripts/IsoFracPy").resolve()
+# path_for_repo=f"/data37/kanon/modern_model_comparison/scripts/IsoFracPy"
+path_for_repo=f"/Users/kanon/Work/IsoFracPy"
+iso_model_dir = pathlib.Path(f"{path_for_repo}").resolve()
 sys.path.append(str(iso_model_dir))
 from main import (
     configure_model, 
@@ -128,7 +129,7 @@ def initialize_figure(
     - tuple:
         - matplotlib.figure.Figure: Initialized figure object.
         - matplotlib.gridspec.GridSpec: GridSpec object for subplots.
-    """    
+    """        
     fig = plt.figure(
         layout="tight", 
         figsize=(fig_size_unit[0] * num_of_plot_x, fig_size_unit[1] * num_of_plot_y)
@@ -186,7 +187,7 @@ def plot_results_for_combination(
 
     Returns:
     - None: Modifies the plot directly.
-    """    
+    """      
     initial_dict = initialization(config)
     frac_factors_dict, alpha_mode_list = get_fractionation_factors(config)
 
@@ -227,7 +228,7 @@ def finalize_and_save_figure(fig, fig_title, iso_model_dir, results_dir, BOOL_SA
 
     Returns:
     - None: Saves the figure to disk if `BOOL_SAVE_FIG` is True.
-    """    
+    """     
     # plt.tight_layout(rect=[0, 0, 1, 0.98]) # [left, bottom, right, top]
     plt.tight_layout()
     plt.show()

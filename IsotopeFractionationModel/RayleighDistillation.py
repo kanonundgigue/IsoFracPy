@@ -215,7 +215,7 @@ def plot_q_dq(
     ylabel = "$\mathsf{\delta D}$" if ISO_TYPE == "HDO" else "$\mathsf{\delta ^{18}O}$"
 
     colors = colormaps[cmap]
-
+    
     if num_of_subplot == 1:
         fig = plt.figure(layout="tight", figsize=(5, 5))
         fig.suptitle(title)

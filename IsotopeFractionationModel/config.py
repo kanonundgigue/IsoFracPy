@@ -7,6 +7,8 @@ Lv = 2.5e6  # Latent heat of vaporization [J/kg]
 R_const = 8.314  # Universal gas constant [kJ/(mol·K)]
 Mw = 18.015  # Molar mass of water [g/mol]
 Ma = 28.964  # Molar mass of air [g/mol]
+grav = 9.80665 # Gravity constant [m/s2]
+day_per_sec = 24 * 60 * 60 # Seconds per day
 
 # Universal parameters
 iso_type_list = ["HDO", "H218O"]
@@ -28,6 +30,8 @@ __all__ = [
     "R_const",
     "Mw",
     "Ma",
+    "grav",
+    "day_per_sec",
     "iso_type_list",
     "phase_type_list", 
     "diffusion_ref_list",

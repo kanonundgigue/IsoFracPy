@@ -60,6 +60,8 @@ from .RayleighDistillation import (
 
 # Post precipitation process calculations
 from .PostPrecipitationProcess import (
-    post_snowfall,
+    snowfall_time_integration,
+    calc_snow_dt,
+    generate_snowfall,
     resublimation,
 )

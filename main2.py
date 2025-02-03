@@ -2,10 +2,9 @@ import numpy as np
 from IsotopeFractionationModel import (
     get_init_conditions,
     rayleigh_process,
+    rayleigh_step,
     plot_q_dq,
-    generate_snowfall,
-    # post_snowfall,
-    resublimation,
+    post_snowfall,
     prepare_frac_factors,
     sat_specific_humidity
 )
@@ -18,6 +17,7 @@ def configure_model():
     - dict: Dictionary containing model parameters.
     """
     config_dict = {
+        ## いじる必要のないパラメータ
         "ISO_TYPE": "HDO",  # Isotope type to simulate. Options are "HDO" or "H218O".
         "dt": 0.5,  # Temperature step size for the simulation [°C].
         "h_air": 1,
@@ -36,17 +36,12 @@ def configure_model():
         "reevap_factor": 0.7,  # Re-evaporation factor for raindrops. Affects the fractionation adjupsstment.
         "BOOL_RESUB": True,  # Whether to consider snow sublimation as a post-precipitation process.
         "resub_factor": 0.5,  # Sublimation fraction factor. Controls the effect of snow sublimation on isotope ratios.
-        "prcp_perday": 2, # Daily precipitation amount 
-        "prcp_duration": 1, # Duration of precipitation (Number of day).
-        "p_btm": 700, # Air pressure of cloud bottom [hPa].
-        "p_top": 400, # Air pressure of cloud top [hPa].
-        
         # "snow_duration_factor": 100,  # Parameter tuning the duration of snowfall effects.
         "delta_q_surf": -120,  # Isotopic ratio (δ-value) of surface vapor [‰].
         "temp_surf": 0,  # Temperature of the surface air layer [°C].
         "rh_surf": 0.75,  # Relative humidity of the surface air layer [ND].
         "drh": 0.2,  # Change in relative humidity of the surface air layer [ND].
-        "ALPHA_RY_MODE": "eff",  # Mode for fractionation factors: "eff" for effective fractionation 
+        "ALPHA_MODE": "eff",  # Mode for fractionation factors: "eff" for effective fractionation 
                              # (including kinetic effects during supercooling), 
                              # "eq" for equilibrium fractionation only.
     }
@@ -82,15 +77,15 @@ def main():
     initial_dict = initialization(config)
 
     # Calculate fractionation factors for the given temperature ranges
-    frac_factors_dict, alpha_ry_mode_list = get_fractionation_factors(config)
+    frac_factors_dict, alpha_mode_list = get_fractionation_factors(config)
 
     rayleigh_results_dict, post_precipitation_results_dict = process_vapor_isotopes(
-        config, initial_dict, frac_factors_dict, alpha_ry_mode_list
+        config, initial_dict, frac_factors_dict, alpha_mode_list
     )
         
     # Plot results
-    title = f"Rayleigh distillation model" 
-    title += f" (f={config['resub_factor']})" if config["BOOL_RESUB"] else f" (No resublimation.)"
+    title = f"Rayleigh distillation model [{config['ALPHA_MODE']}]" 
+    title += f" (f={config['reevap_factor']})" if config["BOOL_REEVAP"] else f" (No raindrop evap.)"
     
     plot_q_dq(
         config, rayleigh_results_dict, post_precipitation_results_dict,
@@ -125,7 +120,7 @@ def get_fractionation_factors(config: dict):
     Returns:
     - tuple:
         - dict: Fractionation factors dictionary.
-        - list: Selected alpha_ry_mode_list based on ALPHA_RY_MODE.
+        - list: Selected alpha_mode_list based on ALPHA_MODE.
     """
     frac_factors_dict = prepare_frac_factors(
         config["temp_default_list"], 
@@ -133,19 +128,19 @@ def get_fractionation_factors(config: dict):
         temp_thres_max=config["temp_thres_max"],
         ISO_TYPE=config["ISO_TYPE"]
     )
-    alpha_ry_mode_list = (
+    alpha_mode_list = (
         frac_factors_dict["alpha_eq"]
-        if config["ALPHA_RY_MODE"] == "eq"
+        if config["ALPHA_MODE"] == "eq"
         else frac_factors_dict["alpha_eff"]
     )
 
-    return frac_factors_dict, alpha_ry_mode_list
+    return frac_factors_dict, alpha_mode_list
 
 def process_vapor_isotopes(
     config: dict, 
     initial_dict: dict,
     frac_factors_dict: dict, 
-    alpha_ry_mode_list: list
+    alpha_mode_list: list
 ) -> tuple:
     """
     Perform Rayleigh and post precipitation processes.
@@ -154,7 +149,7 @@ def process_vapor_isotopes(
     - config (dict): Configuration dictionary containing model parameters.
     - initial_dict (dict): Initial conditions.
     - frac_factors_dict (dict): Fractionation factors.
-    - alpha_ry_mode_list (list): Selected fractionation factors.
+    - alpha_mode_list (list): Selected fractionation factors.
 
     Returns:
     - tuple:
@@ -171,7 +166,7 @@ def process_vapor_isotopes(
             config["temp_air_fin"], 
             initial_dict["q_sat_air"][i], 
             initial_dict["delta_air"][i] / 1000,  # permil -> ratio
-            alpha_ry_mode_list,            
+            alpha_mode_list, # 名前考える             
             frac_factors_dict["alpha_kin"], 
             config["temp_default_list"], 
             BOOL_REEVAP=config["BOOL_REEVAP"],
@@ -183,21 +178,21 @@ def process_vapor_isotopes(
         
         # Post-precipitation process        
         post_precipitation_results = perform_post_precipitation(
-            config, rayleigh_results, alpha_ry_mode_list,
+            config, rayleigh_results, alpha_mode_list,
         )
         
         post_precipitation_results_dict[temp_air_init] = post_precipitation_results
 
     return rayleigh_results_dict, post_precipitation_results_dict
 
-def perform_post_precipitation(config, rayleigh_results, alpha_ry_mode_list):
+def perform_post_precipitation(config, rayleigh_results, alpha_mode_list):
     """
     Perform the post-precipitation process (e.g., snow sublimation).
 
     Parameters:
     - config (dict): Configuration dictionary containing model parameters.
     - rayleigh_results (dict): Results from Rayleigh distillation.
-    - alpha_ry_mode_list (list): Selected fractionation factors.
+    - alpha_mode_list (list): Selected fractionation factors.
 
     Returns:
     - dict: Results from the post-precipitation process.
@@ -205,30 +200,48 @@ def perform_post_precipitation(config, rayleigh_results, alpha_ry_mode_list):
     alpha_final_idx = np.nanargmin(
         np.abs(config["temp_default_list"] - rayleigh_results["temp"][-1])
     )
-    alpha_final = alpha_ry_mode_list[alpha_final_idx]
-    q_final = rayleigh_results["q"][-1] # g/kg
-    delta_final = rayleigh_results["delta"][-1] / 1000 # permil -> ND
+    alpha_final = alpha_mode_list[alpha_final_idx]
+
+    q_final = rayleigh_results["q"][-1]
+    delta_final = rayleigh_results["delta"][-1]
     
-    snow, delta_snow = generate_snowfall(delta_final, q_final, alpha_final, config)
+    prcp_obs = 2 / (24*60*60) # kg/m^2/s
+    pbtm = 70000
+    ptop = 40000
+    grav = 9.80665 # m/s^2
     
+    airmass = (pbtm-ptop)/grav # kg/m^2
+    dq_snow = prcp_obs/(1-config["resub_factor"])/airmass * 1000 # dq/dt : g/kg/s
+    
+    delta_cloud_vapor = delta_final/1000
+    duration=1
+    delta_snow=0
+    for loop in range(duration*24*60*60):
+        hoge = rayleigh_step(alpha_final, q_final, dq_snow, delta_cloud_vapor)
+        delta_cloud_vapor = ( hoge*(q_final-dq_snow) + delta_final/1000*dq_snow )/q_final
+        delta_snow = delta_snow + ( (hoge + 1) * alpha_final - 1 )/(duration*24*60*60)
+
+
     if config["BOOL_RESUB"]:
-        # Post-precipitation process   
-        delta_q_surf_updated, q_surf_updated = resublimation(
-            config["delta_q_surf"] / 1000,
+        # Post-precipitation process
+        return post_snowfall(
+            config["q_surf"], 
+            config["delta_q_surf"] / 1000, 
+            dq_snow*duration*24*60*60, # 単位時間あたりではなく、総量を参照すべきと思われる
             delta_snow,
-            config["q_surf"],
-            snow,
-            config["resub_factor"]
-        )        
+            config["resub_factor"],
+            rayleigh_results["q"][-1],
+            config["rh_surf"],
+            config["drh"],
+            # config["snow_duration_factor"],
+        )
     else:
         # No sublimation.
-        delta_q_surf_updated, q_surf_updated = config["delta_q_surf"] / 1000, config["q_surf"]
-        
-    return {
+        return {
         "delta_snow": delta_snow * 1000,
         "snow": snow,
-        "delta":delta_q_surf_updated * 1000, 
-        "q": q_surf_updated
+        "delta": config["delta_q_surf"],
+        "q": config["q_surf"]
     }
         
 if __name__ == "__main__":
