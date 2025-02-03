@@ -38,7 +38,7 @@ def effective_humidity(
 def prepare_mixing_ratio(
     temp_air_list: list, 
     temp_sea_list: list
-)-> tuple:
+)-> tuple[list, list]:
     """
     Prepare saturated mixing ratio lists for air and sea temperatures.
 
@@ -54,11 +54,11 @@ def prepare_mixing_ratio(
     - tuple: Two lists containing saturated mixing ratios for air and sea
       (both in g/kg).
     """
-    def get_w_list(temp_list):
+    def _get_w_list(temp_list):
         return [sat_mixing_ratio(temp) for temp in temp_list]
 
-    w_sat_air_list = get_w_list(temp_air_list)
-    w_sat_sea_list = get_w_list(temp_sea_list)
+    w_sat_air_list = _get_w_list(temp_air_list)
+    w_sat_sea_list = _get_w_list(temp_sea_list)
 
     return w_sat_air_list, w_sat_sea_list
 
@@ -164,7 +164,7 @@ def initial_sea_evap_fractionation(
     alpha_kin: float, 
     alpha_eql: float, 
     h_air: float = 1,
-    R_sea: float = 1
+    R_sea: float = 1,
 ) -> float:
     """
     Calculate the initial isotope ratio of evaporated air.
@@ -185,4 +185,5 @@ def initial_sea_evap_fractionation(
     - The main equation was modified after Merlivat and Jouzel (1979).
     """
     h_eff = effective_humidity(w_sat_air, w_sat_sea, h_air)
+
     return alpha_kin * R_sea / alpha_eql / (1 - h_eff + h_eff * alpha_kin)

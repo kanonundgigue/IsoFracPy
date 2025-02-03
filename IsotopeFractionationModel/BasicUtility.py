@@ -172,9 +172,9 @@ class SaturationFunc:
         }
             
         key = "liquid" if temp >= temp0_K else "ice"
-        a, b, c, d, e = params[key]
+        a1, a2, a3, a4, a5 = params[key]
     
-        return np.exp(a/temp + b + c * temp + d * temp**2  + e * np.log(temp)) / 100  
+        return np.exp(a1/temp + a2 + a3 * temp + a4 * temp**2  + a5 * np.log(temp)) / 100  
 
     @staticmethod
     def default(temp):

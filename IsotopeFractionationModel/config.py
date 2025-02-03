@@ -4,9 +4,11 @@
 temp0_K = 273.15  # Freezing point of water [K]
 e0 = 6.112  # Reference saturation vapor pressure [hPa]
 Lv = 2.5e6  # Latent heat of vaporization [J/kg]
-R_const = 8.314  # Universal gas constant [J/(mol·K)]
+R_const = 8.314  # Universal gas constant [kJ/(mol·K)]
 Mw = 18.015  # Molar mass of water [g/mol]
 Ma = 28.964  # Molar mass of air [g/mol]
+grav = 9.80665 # Gravity constant [m/s2]
+day_per_sec = 24 * 60 * 60 # Seconds per day
 
 # Universal parameters
 iso_type_list = ["HDO", "H218O"]
@@ -19,6 +21,7 @@ iso_label_dict = {
     "H218O": "$\mathsf{\delta ^{18}O}$"
 }
 
+
 # Export all constants and parameters
 __all__ = [
     "temp0_K",
@@ -27,6 +30,8 @@ __all__ = [
     "R_const",
     "Mw",
     "Ma",
+    "grav",
+    "day_per_sec",
     "iso_type_list",
     "phase_type_list", 
     "diffusion_ref_list",

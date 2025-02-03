@@ -16,14 +16,17 @@ from .BasicUtility import (
 from .EquilibriumFractionation import (
     combine_alpha_eq,
     eq_frac_factor,
+    get_params_eq,
     prepare_combined_alpha_eq,
     plot_eq_frac_factor,
 )
 
 # Kinetic fractionation factor calculations
 from .KineticFractionation import (
+    get_params_kin_sea_evap,
+    get_params_dif_rat,
     kin_frac_factor_sea_evap,
-    kin_frac_factor_supersat_ice,
+    kin_frac_factor_ice,
     plot_kin_frac_factor,
 )
 
@@ -43,7 +46,7 @@ from .InitialCondition import (
 
 # Prepare isotope fractionation factors
 from .PrepareIsotopeFractionationFactors import (
-    interp_alpha_kin_supersat_ice,
+    interp_alpha_kin_ice,
     prepare_frac_factors,
 )
 # Rayleigh distillation calculations 
@@ -57,6 +60,8 @@ from .RayleighDistillation import (
 
 # Post precipitation process calculations
 from .PostPrecipitationProcess import (
-    post_snowfall,
+    snowfall_time_integration,
+    calc_snow_dt,
+    generate_snowfall,
     resublimation,
 )

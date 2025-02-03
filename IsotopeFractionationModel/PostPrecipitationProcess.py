@@ -2,63 +2,122 @@
 """
 Post-precipitation processes module.
 
-This module includes functions to calculate the effects of sublimation from 
-falling snow into surface air and to update the isotopic composition and 
-specific humidity of the air as a result of these processes.
+This module includes functions to compute the impact of snowfall and sublimation
+on the isotopic composition and specific humidity of surface air.
 """
 import numpy as np
 from .config import *
+from .RayleighDistillation import rayleigh_step
 
-def post_snowfall(
-    q_surf: float, 
-    delta_q_surf: float,
-    snow: float,
-    delta_snow: float,
-    resub_factor: float,
-    rh_surf: float = 0.7,
-    drh: float = 0.1,
-    # snow_duration_factor: float = 100,
-) -> dict:
+
+def snowfall_time_integration(
+    delta_ry: float, 
+    q_ry: float, 
+    alpha: float, 
+    snow_dt: float, 
+    duration: int
+) -> tuple[float, float]:
     """
-    Calculate the effects of sublimation from falling snow on surface air.
-
+    Perform time integration to compute the evolution of isotopic composition during 
+    snowfall.
+    
     Parameters:
-    - q_surf (float): Initial specific humidity of the surface air (g/kg).
-    - delta_q_surf (float): Initial isotopic ratio of surface vapor (ex., X'/X - 1 [ND]).
-    - snow (float): Specific humidity of snowfall (g/kg).
-    - delta_snow (float): Isotopic ratio of the snowfall (ex., X'/X - 1 [ND]).
-    - resub_factor (float): Fractionation of snow mass that sublimates into the air.
-    - rh_surf (float): Initial relative humidity of the surface air (ND).
-    - drh (float): Change in relative humidity of the surface air (ND).
-    # - snow_duration factor (float): Tuning parameter for snowfall duration.
-    #   Default is 100.
-
-    Methods:
-    - Calculate the effective amount of sublimated snowfall (`snow_eff`) by scaling 
-      `snow` using `snow_duration_factor`.
-    - Update the surface air's specific humidity and isotopic composition using
-      the `resublimation` function.
-
+    - delta_ry (float): Initial isotopic ratio of cloud cover (ND).
+    - q_ry (float): Initial specific humidity of cloud vapor (g/kg).
+    - alpha (float): Equilibrium fractionation factor for snow formation.
+    - snow_dt (float): Snowfall rate per unit time (g/kg/s).
+    - duration (int): Duration of snowfall in seconds.
+        
     Returns:
-    - dict: Updated conditions including:
-        - `delta_snow` (float): Isotopic ratio of snowfall (ex., X'/X - 1 [ND]).
-        - `snow` (float): Effective sublimated snow (g/kg).
-        - `delta` (float): Updated isotopic ratio of surface vapor (ex., X'/X - 1 [ND]).
-        - `q` (float): Updated specific humidity of surface air (g/kg).
+    - tuple:
+      - float: Updated isotopic ratio of cloud vapor (ND).
+      - float: Mean isotopic ratio of snowfall (ND).
     """
+    delta_cloud_vapor = delta_ry
+    delta_snow_sum = 0
+    
+    for _ in range(duration):
+        delta_hoge = rayleigh_step(alpha, q_ry, -snow_dt, delta_cloud_vapor)
 
-    # snow_eff = snow * snow_duration_factor
-    snow_eff = q_surf * drh / rh_surf / resub_factor
+        # Update cloud vapor isotopic ratio iteratively
+        delta_cloud_vapor = (
+            delta_hoge * (q_ry - snow_dt) + delta_ry * snow_dt
+        ) / q_ry
+        
+        # Accumulate snowfall isotopic ratio
+        delta_snow_sum += ((delta_hoge + 1) * alpha - 1) 
+    
+    # Compute mean isotopic ratio for snowfall
+    delta_snow = delta_snow_sum / duration
+    
+    return delta_cloud_vapor, delta_snow
 
-    delta_q_surf_updated, q_surf_updated = resublimation(
-        delta_q_surf, delta_snow, q_surf, snow_eff, resub_factor
+def calc_snow_dt(config: dict) -> float:
+    """
+    Compute snowfall rate per unit time (snow_dt) based on precipitation and air mass.
+    
+    Parameters:
+    - config (dict): Configuration dictionary containing:
+      - "prcp_perday" (float): Daily precipitation amount (kg/m2/day).
+      - "p_btm" (float): Bottom pressure level (hPa).
+      - "p_top" (float): Top pressure level (hPa).
+      - "BOOL_RESUB" (bool): Whether resublimation is considered.
+      - "resub_factor" (float): Fraction of snow mass that sublimates.
+      
+    Returns:
+    - float: Snowfall rate per unit time (g/kg/s).
+    """
+    try:
+        # Convert precipitation rate to kg/m2/s
+        prcp_dt = config["prcp_perday"] / day_per_sec 
+        # Air mass in kg/m2
+        Q_cld = (config["p_btm"] - config["p_top"]) * 100 / grav
+        if config["BOOL_RESUB"]:
+            return prcp_dt / (1 - config["resub_factor"]) / Q_cld * 1000 # g/kg/s
+        else:
+            return prcp_dt / Q_cld * 1000 # g/kg/s
+    except KeyError as e:
+        raise ValueError(f"Missing required config parameter: {e}")
+        
+def generate_snowfall(
+    delta_ry: float, 
+    q_ry: float, 
+    alpha: float, 
+    config: dict
+) -> tuple[float, float]:
+    """
+    Generate snowfall and compute its isotopic composition.
+    
+    Parameters:
+    - delta_ry (float): Initial isotopic ratio of cloud vapor (ND).
+    - q_ry (float): Initial specific humidity of cloud vapor (g/kg).
+    - alpha (float): Equilibrium fractionation factor for snow formation.
+    - config (dict): Configuration dictionary containing:
+      - "prcp_duration" (float): Duration of snowfall in days.
+      - "prcp_perday" (float): Daily precipitation amount (kg/m2/day).
+      - "p_btm" (float): Bottom pressure level (hPa).
+      - "p_top" (float): Top pressure level (hPa).
+      - "BOOL_RESUB" (bool): Whether resublimation is considered.
+      - "resub_factor" (float): Fraction of snow mass that sublimates.
+      
+    Returns:
+    - tuple:
+      - float: Total snowfall (g/kg).
+      - float: Mean isotopic ratio of snowfall (ND).
+    """
+    try:
+        duration = int(config["prcp_duration"] * day_per_sec)
+    except KeyError as e:
+        raise ValueError(f"Missing required prcp_duration parameter in config: {e}")
+        
+    snow_dt = calc_snow_dt(config)
+    snow = snow_dt * duration
+    
+    delta_cloud_vapor, delta_snow = snowfall_time_integration(
+        delta_ry, q_ry, alpha, snow_dt, duration
     )
-    return {
-        "delta_snow": delta_snow * 1000,
-        "snow": snow_eff,
-        "delta":delta_q_surf_updated * 1000, 
-        "q": q_surf_updated
-    }
+
+    return snow, delta_snow
 
 def resublimation(
     delta_vapor: float, 
@@ -66,7 +125,7 @@ def resublimation(
     qv: float, 
     snow: float, 
     f: float
-) -> tuple:
+) -> tuple[float, float]:
     """
     Calculate the updated specific humidity and isotopic composition after snow sublimation.
     
@@ -77,24 +136,18 @@ def resublimation(
     - snow (float): Specific humidity of snowfall (g/kg).
     - f (float): Fraction of snow mass that sublimates into the air.
 
-    Methods:
-    - Calculate the sublimated snow amount (`qi`) as the product of `snow` and `f`.
-    - Compute the updated specific humidity (`q_updated`) by adding `qi` and `qv`.
-    - Update the isotopic ratio of vapor (`R_updated`) by weighting the initial
-      ratio (`Rv`) and the snow ratio (`Ri`) based on their respective masses.
-
     Returns:
     - tuple:
         - float: Updated isotopic ratio of surface vapor (ex., X'/X - 1 [ND]).
         - float: Updated specific humidity of surface vapor (g/kg).
     """
     
-    qi = np.abs(snow) * f # 降雪のうち昇華により大気に戻る量
+    qsub = np.abs(snow) * f # Snow mass converted to vapor
     
-    Rv = delta_vapor + 1 # 水蒸気の同位体比（レイリー蒸留後)
-    Ri = delta_snow + 1 # 降雪の同位体比
-    print()
-    q_updated = qv + qi # 水蒸気量の更新
-    R_updated = (qv * Rv + qi * Ri) / q_updated # 同位体比の更新
+    Rv = delta_vapor + 1 # Initial vapor isotopic ratio
+    Ri = delta_snow + 1 # Snow isotopic ratio
+
+    q_updated = qv + qsub # Updated specific humidity
+    R_updated = (qv * Rv + qsub * Ri) / q_updated # Updated isotopic ratio
 
     return R_updated - 1, q_updated    

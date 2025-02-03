@@ -61,7 +61,24 @@ def combine_alpha_eq(
 
     # Return the interpolated values as a list
     return alpha_eq_array.tolist()
-    
+
+def get_params_eq(ISO_TYPE: str, PHASE_TYPE: str):
+    """
+    References:
+    - This function provide parameters used in the empirical equations of Majoube (1971a, 1971b).
+    """
+    params_dict = {
+        "H218O": {
+            "vl": [1137, -0.4156, -0.002067],
+            "vi": [0, 11.839, -0.028224],
+        },
+        "HDO": {
+            "vl": [24844, -76.248, 0.052612],        
+            "vi": [16289, 0, -0.0945]
+        },
+    } 
+    return params_dict[ISO_TYPE][PHASE_TYPE]     
+
 def eq_frac_factor(
     temp_C: float,                                             
     ISO_TYPE: str = "HDO", 
@@ -95,29 +112,8 @@ def eq_frac_factor(
     check_validity(PHASE_TYPE, phase_type_list, "PHASE_TYPE")
 
     temp = temp_C + temp0_K
-
-    if PHASE_TYPE == "vl":
-        params_dict = {
-            "H218O": [1137, -0.4156, -0.002067],
-            "HDO": [24844, -76.248, 0.052612],        
-        }    
-    
-        a1, a2, a3 = params_dict[ISO_TYPE]
-                
-        alpha =  np.exp(a1 / temp**2 + a2 / temp + a3)
-        
-    elif PHASE_TYPE == "vi":
-        params_dict = {
-            "H218O": [11.839, -0.028224, 1],
-            "HDO": [16289, -0.0945, 2]
-        }  
-
-        a1, a2, b = params_dict[ISO_TYPE]
-
-        alpha = np.exp(a1 / temp**b + a2)
-        
-    else:
-        raise ValueError(f"Invalid PHASE_TYPE: {PHASE_TYPE}. Must be 'vl' or 'vi'.")
+    a1, a2, a3 = get_params_eq(ISO_TYPE, PHASE_TYPE)   
+    alpha =  np.exp(a1 / temp**2 + a2 / temp + a3)  
 
     return alpha
 
@@ -152,15 +148,9 @@ def prepare_combined_alpha_eq(
     - This function calls `eq_frac_factor` and `combine_alpha_eq`.
     """
     check_validity(ISO_TYPE, iso_type_list, "ISO_TYPE")
-    
-    alpha_eqi_list = [
-        eq_frac_factor(temp, ISO_TYPE=ISO_TYPE, PHASE_TYPE="vi")
-        for temp in temp_list
-    ]
-    alpha_eql_list = [
-        eq_frac_factor(temp, ISO_TYPE=ISO_TYPE, PHASE_TYPE="vl")
-        for temp in temp_list
-    ]
+        
+    alpha_eqi_list = _get_alpha_list(temp_list, PHASE_TYPE="vi", ISO_TYPE=ISO_TYPE)
+    alpha_eql_list = _get_alpha_list(temp_list, PHASE_TYPE="vl", ISO_TYPE=ISO_TYPE)
     
     alpha_eq_list = combine_alpha_eq(
         temp_list, alpha_eqi_list, alpha_eql_list, 
@@ -168,6 +158,12 @@ def prepare_combined_alpha_eq(
     )
 
     return alpha_eq_list
+    
+def _get_alpha_list(temp_list, PHASE_TYPE: str, ISO_TYPE: str):
+    return [
+        eq_frac_factor(temp, ISO_TYPE=ISO_TYPE, PHASE_TYPE=PHASE_TYPE)
+        for temp in temp_list
+    ]
     
 def plot_eq_frac_factor(
     temp_C_list: list,

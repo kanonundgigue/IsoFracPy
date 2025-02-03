@@ -11,10 +11,10 @@ from .EquilibriumFractionation import (
 )
 from .KineticFractionation import (
     kin_frac_factor_sea_evap,
-    kin_frac_factor_supersat_ice,
+    kin_frac_factor_ice,
 )
 
-def interp_alpha_kin_supersat_ice(alpha_kin_list, invalid_thres: float = 1) -> list: 
+def interp_alpha_kin_ice(alpha_kin_list, invalid_thres: float = 1) -> list: 
     """
     Interpolate alpha_kin values with linear interpolation.
 
@@ -39,6 +39,7 @@ def interp_alpha_kin_supersat_ice(alpha_kin_list, invalid_thres: float = 1) -> l
     alpha_kin_array[-1] = invalid_thres  # Assuming the ascending order of temperature
     alpha_kin_array = pd.Series(alpha_kin_array).interpolate(method="linear").to_numpy()
     return alpha_kin_array.tolist()
+
 def prepare_frac_factors(
     temp_list: list, 
     temp_thres_min: float = -20,
@@ -59,12 +60,12 @@ def prepare_frac_factors(
     )
     
     alpha_kin_list = [
-        kin_frac_factor_supersat_ice(
+        kin_frac_factor_ice(
             temp, ISO_TYPE=ISO_TYPE
         )
         for temp in temp_list
     ]
-    alpha_kin_list = interp_alpha_kin_supersat_ice(alpha_kin_list)
+    alpha_kin_list = interp_alpha_kin_ice(alpha_kin_list)
     
     alpha_eff_list = [
         alpha_eq_list[i] * alpha_kin_list[i]
@@ -72,8 +73,6 @@ def prepare_frac_factors(
     ]
 
     return {
-        # "alpha_eqi": alpha_eqi_list,
-        # "alpha_eql": alpha_eql_list,
         "alpha_eq": alpha_eq_list,
         "alpha_kin": alpha_kin_list,
         "alpha_eff": alpha_eff_list,

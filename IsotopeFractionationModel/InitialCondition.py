@@ -26,6 +26,7 @@ def get_init_conditions(
     SAT_EQ_REF: str = "Sonntag",
     R_sea: float = 1, 
     h_air: float = 1,
+    surface_wind: float = 6.5,
 ) -> dict:
     """
     Calculate initial conditions for Q-dQ analysis based on sea surface evaporation.
@@ -83,14 +84,14 @@ def get_init_conditions(
         for temp in temp_sea_list
     ]
     alpha_kin_sea_list = [
-        kin_frac_factor_sea_evap(temp, ISO_TYPE = ISO_TYPE)
+        kin_frac_factor_sea_evap(temp, ISO_TYPE = ISO_TYPE, surface_wind = surface_wind)
         for temp in temp_sea_list
     ]
-
+    
     R_air_list = [
         initial_sea_evap_fractionation(
-            w_sat_air_list[i], w_sat_sea_list[i], 
-            alpha_kin_sea_list[i], alpha_eql_sea_list[i], 
+            w_sat_air=w_sat_air_list[i], w_sat_sea=w_sat_sea_list[i], 
+            alpha_kin=alpha_kin_sea_list[i], alpha_eql=alpha_eql_sea_list[i], 
             h_air=h_air, R_sea = R_sea
         ) for i in range(temp_list_len)
     ]
