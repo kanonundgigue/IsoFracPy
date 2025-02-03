@@ -11,9 +11,9 @@ from .RayleighDistillation import rayleigh_step
 
 
 def snowfall_time_integration(
-    delta_final: float, 
-    q_final: float, 
-    alpha_final: float, 
+    delta_ry: float, 
+    q_ry: float, 
+    alpha: float, 
     snow_dt: float, 
     duration: int
 ) -> tuple[float, float]:
@@ -22,9 +22,9 @@ def snowfall_time_integration(
     snowfall.
     
     Parameters:
-    - delta_final (float): Initial isotopic ratio of cloud cover (ND).
-    - q_final (float): Initial specific humidity of cloud vapor (g/kg).
-    - alpha_final (float): Equilibrium fractionation factor for snow formation.
+    - delta_ry (float): Initial isotopic ratio of cloud cover (ND).
+    - q_ry (float): Initial specific humidity of cloud vapor (g/kg).
+    - alpha (float): Equilibrium fractionation factor for snow formation.
     - snow_dt (float): Snowfall rate per unit time (g/kg/s).
     - duration (int): Duration of snowfall in seconds.
         
@@ -33,19 +33,19 @@ def snowfall_time_integration(
       - float: Updated isotopic ratio of cloud vapor (ND).
       - float: Mean isotopic ratio of snowfall (ND).
     """
-    delta_cloud_vapor = delta_final
+    delta_cloud_vapor = delta_ry
     delta_snow_sum = 0
     
     for _ in range(duration):
-        delta_hoge = rayleigh_step(alpha_final, q_final, -snow_dt, delta_cloud_vapor)
+        delta_hoge = rayleigh_step(alpha, q_ry, -snow_dt, delta_cloud_vapor)
 
         # Update cloud vapor isotopic ratio iteratively
         delta_cloud_vapor = (
-            delta_hoge * (q_final - snow_dt) + delta_final * snow_dt
-        ) / q_final
+            delta_hoge * (q_ry - snow_dt) + delta_ry * snow_dt
+        ) / q_ry
         
         # Accumulate snowfall isotopic ratio
-        delta_snow_sum += ((delta_hoge + 1) * alpha_final - 1) 
+        delta_snow_sum += ((delta_hoge + 1) * alpha - 1) 
     
     # Compute mean isotopic ratio for snowfall
     delta_snow = delta_snow_sum / duration
@@ -71,27 +71,27 @@ def calc_snow_dt(config: dict) -> float:
         # Convert precipitation rate to kg/m2/s
         prcp_dt = config["prcp_perday"] / day_per_sec 
         # Air mass in kg/m2
-        airmass = (config["p_btm"] - config["p_top"]) * 100 / grav
+        Q_cld = (config["p_btm"] - config["p_top"]) * 100 / grav
         if config["BOOL_RESUB"]:
-            return prcp_dt / (1 - config["resub_factor"]) / airmass * 1000 # g/kg/s
+            return prcp_dt / (1 - config["resub_factor"]) / Q_cld * 1000 # g/kg/s
         else:
-            return prcp_dt / airmass * 1000 # g/kg/s
+            return prcp_dt / Q_cld * 1000 # g/kg/s
     except KeyError as e:
         raise ValueError(f"Missing required config parameter: {e}")
         
 def generate_snowfall(
-    delta_final: float, 
-    q_final: float, 
-    alpha_final: float, 
+    delta_ry: float, 
+    q_ry: float, 
+    alpha: float, 
     config: dict
 ) -> tuple[float, float]:
     """
     Generate snowfall and compute its isotopic composition.
     
     Parameters:
-    - delta_final (float): Initial isotopic ratio of cloud vapor (ND).
-    - q_final (float): Initial specific humidity of cloud vapor (g/kg).
-    - alpha_final (float): Equilibrium fractionation factor for snow formation.
+    - delta_ry (float): Initial isotopic ratio of cloud vapor (ND).
+    - q_ry (float): Initial specific humidity of cloud vapor (g/kg).
+    - alpha (float): Equilibrium fractionation factor for snow formation.
     - config (dict): Configuration dictionary containing:
       - "prcp_duration" (float): Duration of snowfall in days.
       - "prcp_perday" (float): Daily precipitation amount (kg/m2/day).
@@ -114,7 +114,7 @@ def generate_snowfall(
     snow = snow_dt * duration
     
     delta_cloud_vapor, delta_snow = snowfall_time_integration(
-        delta_final, q_final, alpha_final, snow_dt, duration
+        delta_ry, q_ry, alpha, snow_dt, duration
     )
 
     return snow, delta_snow
