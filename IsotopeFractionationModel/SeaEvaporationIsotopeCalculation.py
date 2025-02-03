@@ -38,7 +38,7 @@ def effective_humidity(
 def prepare_mixing_ratio(
     temp_air_list: list, 
     temp_sea_list: list
-)-> tuple:
+)-> tuple[list, list]:
     """
     Prepare saturated mixing ratio lists for air and sea temperatures.
 

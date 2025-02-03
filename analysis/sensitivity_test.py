@@ -8,8 +8,8 @@ import itertools
 # Original modules
 from save_figure_with_confirmation import save_figure_with_confirmation as save_fig
 
-# path_for_repo=f"/data37/kanon/modern_model_comparison/scripts/IsoFracPy"
-path_for_repo=f"/Users/kanon/Work/IsoFracPy"
+# path_for_repo=f"/data37/kanon/modern_model_comparison/scripts/IsoFracPy" # server
+path_for_repo=f"/Users/kanon/Work/IsoFracPy" # local
 iso_model_dir = pathlib.Path(f"{path_for_repo}").resolve()
 sys.path.append(str(iso_model_dir))
 from main import (
@@ -130,14 +130,18 @@ def initialize_figure(
         - matplotlib.figure.Figure: Initialized figure object.
         - matplotlib.gridspec.GridSpec: GridSpec object for subplots.
     """        
-    fig = plt.figure(
-        layout="tight", 
-        figsize=(fig_size_unit[0] * num_of_plot_x, fig_size_unit[1] * num_of_plot_y)
-    )
+    figsize = calculate_figure_size(fig_size_unit, num_of_plot_x, num_of_plot_y)
+    fig = plt.figure(layout="tight", figsize=figsize)
     fig.suptitle(fig_title, y=1.02)
     gs = GridSpec(num_of_plot_y, num_of_plot_x, figure=fig)
     return fig, gs
 
+def calculate_figure_size(fig_size_unit, num_of_plot_x, num_of_plot_y):
+    """
+    Calculate figure size dynamically.
+    """
+    return (fig_size_unit[0] * num_of_plot_x, fig_size_unit[1] * num_of_plot_y)
+    
 def configure_model_with_params(param_fix_dict: dict, param_test_dict: dict, combination: tuple) -> dict:
     """
     Configure the model with the given parameter combination.
@@ -154,9 +158,18 @@ def configure_model_with_params(param_fix_dict: dict, param_test_dict: dict, com
     if param_fix_dict:
         config.update(param_fix_dict)
         
-    for param, value in zip(param_test_dict.keys(), combination):
-        config[param] = value
+    config.update(dict(zip(param_test_dict.keys(), combination)))
+
     return config
+
+def generate_subplot_label(index):
+    """
+    Generate subplot labels like (a1).
+    """
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    prefix = alphabet[index % 26]
+    suffix = str(index // 26 + 1) if index >= 26 else ""
+    return f"{prefix}{suffix}"
 
 def plot_results_for_combination(
     config: dict, 
@@ -195,8 +208,8 @@ def plot_results_for_combination(
         config, initial_dict, frac_factors_dict, alpha_mode_list
     )
 
-    title = f"({chr(ord('a') + index)}) "+ "".join(
-            [f"{param}={val}"+"\n" for param, val in zip(param_names, combination)]
+    title = f"({generate_subplot_label(index)})\n"+ "\n".join(
+            [f"{param}={val}" for param, val in zip(param_names, combination)]
         )
     title = title[:-1]
     ax = fig.add_subplot(gs[index // subplot_hnum_max, index % subplot_hnum_max])
@@ -230,7 +243,7 @@ def finalize_and_save_figure(fig, fig_title, iso_model_dir, results_dir, BOOL_SA
     - None: Saves the figure to disk if `BOOL_SAVE_FIG` is True.
     """     
     # plt.tight_layout(rect=[0, 0, 1, 0.98]) # [left, bottom, right, top]
-    plt.tight_layout()
+    # plt.tight_layout()
     plt.show()
 
     results_path = os.path.join(iso_model_dir, results_dir)

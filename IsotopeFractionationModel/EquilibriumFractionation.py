@@ -148,15 +148,9 @@ def prepare_combined_alpha_eq(
     - This function calls `eq_frac_factor` and `combine_alpha_eq`.
     """
     check_validity(ISO_TYPE, iso_type_list, "ISO_TYPE")
-    
-    def _get_alpha_list(PHASE_TYPE):
-        return [
-            eq_frac_factor(temp, ISO_TYPE=ISO_TYPE, PHASE_TYPE=PHASE_TYPE)
-            for temp in temp_list
-        ]
-    
-    alpha_eqi_list = _get_alpha_list("vi")
-    alpha_eql_list = _get_alpha_list("vl")
+        
+    alpha_eqi_list = _get_alpha_list(temp_list, PHASE_TYPE="vi", ISO_TYPE=ISO_TYPE)
+    alpha_eql_list = _get_alpha_list(temp_list, PHASE_TYPE="vl", ISO_TYPE=ISO_TYPE)
     
     alpha_eq_list = combine_alpha_eq(
         temp_list, alpha_eqi_list, alpha_eql_list, 
@@ -164,6 +158,12 @@ def prepare_combined_alpha_eq(
     )
 
     return alpha_eq_list
+    
+def _get_alpha_list(temp_list, PHASE_TYPE: str, ISO_TYPE: str):
+    return [
+        eq_frac_factor(temp, ISO_TYPE=ISO_TYPE, PHASE_TYPE=PHASE_TYPE)
+        for temp in temp_list
+    ]
     
 def plot_eq_frac_factor(
     temp_C_list: list,

@@ -9,7 +9,7 @@ from .config import *
 from .BasicUtility import check_validity
 from .EquilibriumFractionation import eq_frac_factor
     
-def get_params_kin_sea_evap(ISO_TYPE):
+def get_params_kin_sea_evap(ISO_TYPE: str) -> dict:
     params_dict = {
         "H218O": [0.006, 0.000285, 0.00082],
         "HDO": [0.00528, 0.0002508, 0.0007216] 
@@ -62,7 +62,7 @@ def kin_frac_factor_sea_evap(
     else:
         return 1 - (a2 * surface_wind + a3)
 
-def get_params_dif_rat(ISO_TYPE, DIFFUSION_REF):
+def get_params_dif_rat(ISO_TYPE: str, DIFFUSION_REF: str) -> dict:
     params_dict = {
         "H218O": {"M78": 1.02849, "C03": 1.03189},
         "HDO": {"M78": 1.02512, "C03": 1.01636}

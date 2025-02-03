@@ -143,7 +143,7 @@ def initialize_rayleigh_arrays(
     temp_rayleigh_list: np.ndarray,
     q_init: float, 
     delta_init: float
-) -> tuple:
+) -> tuple[list, list]:
     """
     Initialize arrays for Rayleigh distillation.
 

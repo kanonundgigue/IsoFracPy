@@ -133,10 +133,12 @@ def get_fractionation_factors(config: dict):
         temp_thres_max=config["temp_thres_max"],
         ISO_TYPE=config["ISO_TYPE"]
     )
-    alpha_ry_mode_list = (
-        frac_factors_dict["alpha_eq"]
-        if config["ALPHA_RY_MODE"] == "eq"
-        else frac_factors_dict["alpha_eff"]
+    alpha_ry_modes = {
+        "eq": frac_factors_dict["alpha_eq"],
+        "eff": frac_factors_dict["alpha_eff"]
+    }
+    alpha_ry_mode_list = alpha_ry_modes.get(
+        config["ALPHA_RY_MODE"], frac_factors_dict["alpha_eff"]
     )
 
     return frac_factors_dict, alpha_ry_mode_list
@@ -161,12 +163,8 @@ def process_vapor_isotopes(
         - dict: Results from Rayleigh distillation.
         - dict: Results from post-precipitation process.
     """
-    rayleigh_results_dict = {}
-    post_precipitation_results_dict = {}
-    
-    for i, temp_air_init in enumerate(config["temp_air_init_list"]):
-        # Rayleigh distillation process        
-        rayleigh_results = rayleigh_process(
+    rayleigh_results_dict = {
+        temp_air_init: rayleigh_process(
             temp_air_init, 
             config["temp_air_fin"], 
             initial_dict["q_sat_air"][i], 
@@ -178,16 +176,15 @@ def process_vapor_isotopes(
             reevap_factor=config["reevap_factor"], 
             dt=config["dt"],
             )
-        
-        rayleigh_results_dict[temp_air_init] = rayleigh_results
-        
-        # Post-precipitation process        
-        post_precipitation_results = perform_post_precipitation(
-            config, rayleigh_results, alpha_ry_mode_list,
-        )
-        
-        post_precipitation_results_dict[temp_air_init] = post_precipitation_results
+        for i, temp_air_init in enumerate(config["temp_air_init_list"])
+    }
 
+    post_precipitation_results_dict = {
+        temp_air_init: perform_post_precipitation(
+            config, rayleigh_results, alpha_ry_mode_list,
+        ) for temp_air_init, rayleigh_results in rayleigh_results_dict.items()
+    }
+        
     return rayleigh_results_dict, post_precipitation_results_dict
 
 def perform_post_precipitation(config, rayleigh_results, alpha_ry_mode_list):
@@ -211,18 +208,22 @@ def perform_post_precipitation(config, rayleigh_results, alpha_ry_mode_list):
     
     snow, delta_snow = generate_snowfall(delta_final, q_final, alpha_final, config)
     
-    if config["BOOL_RESUB"]:
-        # Post-precipitation process   
-        delta_q_surf_updated, q_surf_updated = resublimation(
-            config["delta_q_surf"] / 1000,
-            delta_snow,
-            config["q_surf"],
-            snow,
-            config["resub_factor"]
-        )        
-    else:
-        # No sublimation.
-        delta_q_surf_updated, q_surf_updated = config["delta_q_surf"] / 1000, config["q_surf"]
+    if not config["BOOL_RESUB"]:
+        return {
+            "delta_snow": delta_snow * 1000,
+            "snow": snow,
+            "delta": config["delta_q_surf"], 
+            "q": config["q_surf"]
+        }
+    
+    # Resublimation process
+    delta_q_surf_updated, q_surf_updated = resublimation(
+        config["delta_q_surf"] / 1000,
+        delta_snow,
+        config["q_surf"],
+        snow,
+        config["resub_factor"]
+    )        
         
     return {
         "delta_snow": delta_snow * 1000,
