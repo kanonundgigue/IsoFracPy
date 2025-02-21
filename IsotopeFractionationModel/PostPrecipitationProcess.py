@@ -15,7 +15,8 @@ def snowfall_time_integration(
     q_ry: float, 
     alpha: float, 
     snow_dt: float, 
-    duration: int
+    duration: int,
+    CLOUD_AGING: False,
 ) -> tuple[float, float]:
     """
     Perform time integration to compute the evolution of isotopic composition during 
@@ -39,11 +40,12 @@ def snowfall_time_integration(
     for _ in range(duration):
         delta_hoge = rayleigh_step(alpha, q_ry, -snow_dt, delta_cloud_vapor)
 
-        # Update cloud vapor isotopic ratio iteratively
-        delta_cloud_vapor = (
-            delta_hoge * (q_ry - snow_dt) + delta_ry * snow_dt
-        ) / q_ry
-        
+        if CLOUD_AGING:
+            # Update cloud vapor isotopic ratio iteratively
+            delta_cloud_vapor = (
+                delta_hoge * (q_ry - snow_dt) + delta_ry * snow_dt
+            ) / q_ry
+            
         # Accumulate snowfall isotopic ratio
         delta_snow_sum += ((delta_hoge + 1) * alpha - 1) 
     
@@ -112,9 +114,10 @@ def generate_snowfall(
         
     snow_dt = calc_snow_dt(config)
     snow = snow_dt * duration
+    CLOUD_AGING = config["CLOUD_AGING"]
     
     delta_cloud_vapor, delta_snow = snowfall_time_integration(
-        delta_ry, q_ry, alpha, snow_dt, duration
+        delta_ry, q_ry, alpha, snow_dt, duration, CLOUD_AGING
     )
 
     return snow, delta_snow

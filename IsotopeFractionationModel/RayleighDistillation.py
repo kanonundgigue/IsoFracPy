@@ -96,17 +96,26 @@ def rayleigh_process(
 
         q_list[i] = sat_specific_humidity(temp)
         dq = q_list[i] - q_list[i - 1]
-
-        idx = np.nanargmin(np.abs(temp_default_list - temp))
-        alpha = alpha_eff_list[idx]
-
-        if temp >= 0 and BOOL_REEVAP == True:
-            # Re-evaporation from raindrop            
-            alpha = adjust_alpha_raindrop_evap(alpha, reevap_factor=reevap_factor)
+        try:
+            idx = np.nanargmin(np.abs(temp_default_list - temp))
+            alpha = alpha_eff_list[idx]
+    
+            if temp >= 0 and BOOL_REEVAP == True:
+                # Re-evaporation from raindrop            
+                alpha = adjust_alpha_raindrop_evap(alpha, reevap_factor=reevap_factor)
+                
+            delta_list[i] = rayleigh_step(alpha, q_list[i - 1], dq, delta_list[i - 1])
             
-        delta_list[i] = rayleigh_step(alpha, q_list[i - 1], dq, delta_list[i - 1])
+            if np.abs(delta_list[i]) == np.inf:
+                delta_list[i:] = np.nan
+                q_list[i:] = np.nan
+                print(f"Error! 0 div!")
+                break
+        except (ZeroDivisionError, IndexError, TypeError, ValueError) as e:            
+            print(f"Error in rayleigh_step at index {i}: {e}")
+            delta_list[i:] = np.nan
+            q_list[i:] = np.nan
         
-
     return {
         "q": q_list,
         "delta": delta_list * 1000, # ratio -> permil
@@ -155,8 +164,8 @@ def initialize_rayleigh_arrays(
     Returns:
     - tuple: Arrays for specific humidity (`q_list`) and delta values (`delta_list`).
     """
-    q_list = np.zeros_like(temp_rayleigh_list)
-    delta_list = np.zeros_like(temp_rayleigh_list)
+    q_list = np.full_like(temp_rayleigh_list, np.nan, dtype=np.float64)
+    delta_list = np.full_like(temp_rayleigh_list, np.nan, dtype=np.float64)
     q_list[0] = q_init
     delta_list[0] = delta_init
     return q_list, delta_list

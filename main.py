@@ -39,7 +39,8 @@ def configure_model():
         "prcp_perday": 2, # Daily precipitation amount 
         "prcp_duration": 1, # Duration of precipitation (Number of day).
         "p_btm": 700, # Air pressure of cloud bottom [hPa].
-        "p_top": 400, # Air pressure of cloud top [hPa].
+        "p_top": 400, # Air pressure of cloud top [hPa].,
+        "CLOUD_AGING": True, # If consider aging of cloud vapor isotope
         
         # "snow_duration_factor": 100,  # Parameter tuning the duration of snowfall effects.
         "delta_q_surf": -120,  # Isotopic ratio (δ-value) of surface vapor [‰].
@@ -61,7 +62,7 @@ def configure_model():
 
     return config_dict
     
-def main():
+def main(ISO_TYPE: str = "HDO"):
     """
     Main function for running the Rayleigh distillation model.
 
@@ -77,6 +78,10 @@ def main():
     """
 
     config = configure_model()
+
+    config["ISO_TYPE"] = ISO_TYPE
+    if ISO_TYPE == "H218O":
+        config["delta_q_surf"] = config["delta_q_surf"]/8 
     
     # Calculate initial conditions
     initial_dict = initialization(config)
@@ -94,7 +99,7 @@ def main():
     
     plot_q_dq(
         config, rayleigh_results_dict, post_precipitation_results_dict,
-        ISO_TYPE="HDO", title=title
+        ISO_TYPE=ISO_TYPE, title=title
     )
 
 def initialization(config: dict):
@@ -163,21 +168,25 @@ def process_vapor_isotopes(
         - dict: Results from Rayleigh distillation.
         - dict: Results from post-precipitation process.
     """
-    rayleigh_results_dict = {
-        temp_air_init: rayleigh_process(
-            temp_air_init, 
-            config["temp_air_fin"], 
-            initial_dict["q_sat_air"][i], 
-            initial_dict["delta_air"][i] / 1000,  # permil -> ratio
-            alpha_ry_mode_list,            
-            frac_factors_dict["alpha_kin"], 
-            config["temp_default_list"], 
-            BOOL_REEVAP=config["BOOL_REEVAP"],
-            reevap_factor=config["reevap_factor"], 
-            dt=config["dt"],
-            )
-        for i, temp_air_init in enumerate(config["temp_air_init_list"])
-    }
+    try:
+        rayleigh_results_dict = {
+            temp_air_init: rayleigh_process(
+                temp_air_init, 
+                config["temp_air_fin"], 
+                initial_dict["q_sat_air"][i], 
+                initial_dict["delta_air"][i] / 1000,  # permil -> ratio
+                alpha_ry_mode_list,            
+                frac_factors_dict["alpha_kin"], 
+                config["temp_default_list"], 
+                BOOL_REEVAP=config["BOOL_REEVAP"],
+                reevap_factor=config["reevap_factor"], 
+                dt=config["dt"],
+                )
+            for i, temp_air_init in enumerate(config["temp_air_init_list"])
+        }
+    except ValueError as e:
+        print(f"ValueError {e}")
+        
 
     post_precipitation_results_dict = {
         temp_air_init: perform_post_precipitation(
