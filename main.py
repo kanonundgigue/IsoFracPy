@@ -28,9 +28,9 @@ def configure_model():
         "temp_thres_max": 0,  # Upper temperature threshold for liquid-vapor fractionation ("vl" phase) [°C].
         #
         ## Tuning parameters
-        "temp_sea_init_list": [ 0, 0, 5, 10, 15],  # List of initial sea surface temperatures [°C].
-        "temp_air_init_list": [-5, 0, 5, 10, 15],  # List of initial air temperatures above the sea surface [°C].
-        "temp_air_fin": -30,  # Final air temperature after Rayleigh distillation [°C].
+        "temp_sea_init_list": [5, 10, 15],  # List of initial sea surface temperatures [°C].
+        "temp_air_init_list": [5, 10, 15],  # List of initial air temperatures above the sea surface [°C].
+        "temp_air_fin": -10,  # Final air temperature after Rayleigh distillation [°C].
         "BOOL_REEVAP": False,  # Whether to consider raindrop re-evaporation during Rayleigh distillation.
                               # (Ref. Worden et al., 2007).
         "reevap_factor": 0.7,  # Re-evaporation factor for raindrops. Affects the fractionation adjupsstment.
@@ -62,7 +62,7 @@ def configure_model():
 
     return config_dict
     
-def main(ISO_TYPE: str = "HDO"):
+def main(ISO_TYPE: str = "HDO", config=None):
     """
     Main function for running the Rayleigh distillation model.
 
@@ -76,12 +76,12 @@ def main(ISO_TYPE: str = "HDO"):
     Returns:
     - None: Displays the plot.
     """
+    if config is None:
+        config = configure_model()
 
-    config = configure_model()
-
-    config["ISO_TYPE"] = ISO_TYPE
-    if ISO_TYPE == "H218O":
-        config["delta_q_surf"] = config["delta_q_surf"]/8 
+        config["ISO_TYPE"] = ISO_TYPE
+        if ISO_TYPE == "H218O":
+            config["delta_q_surf"] = config["delta_q_surf"]/8 
     
     # Calculate initial conditions
     initial_dict = initialization(config)
@@ -95,7 +95,6 @@ def main(ISO_TYPE: str = "HDO"):
         
     # Plot results
     title = f"Rayleigh distillation model" 
-    title += f" (f={config['resub_factor']})" if config["BOOL_RESUB"] else f" (No resublimation.)"
     
     plot_q_dq(
         config, rayleigh_results_dict, post_precipitation_results_dict,
