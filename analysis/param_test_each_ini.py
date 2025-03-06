@@ -30,7 +30,8 @@ def set_test_param(ISO_TYPE: str = "HDO"):
             # "delta_q_surf": [-120, -100] if ISO_TYPE == "HDO" else [-15, -12.5],
             "h_air": [1, 0.5],
             "surface_wind": [6.5, 35],
-            "temp_air_init_list": [[5, 10, 15], [0, 5, 10]], 
+        "temp_air_init_list": [[5, 10, 15], [0, 5, 10]], 
+            
         }  
     
 def set_fix_param(ISO_TYPE: str = "HDO"):
