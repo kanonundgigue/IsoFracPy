@@ -1,5 +1,5 @@
 ---
-title: Description of a simple isotope model (IsoFracPy module)
+title: Description of a simple isotopic model (IsoFracPy module)
 date: 2025-02-01
 author: Kanon Kino
 format:
@@ -12,7 +12,7 @@ format:
     highlight-style: github
 ---
 
-This document describes a simple isotope model that calculates isotope fractionation during vapor transport. The model focuses on vapor transport from low to high latitudes, assuming monotonical temperature decreases, over the Southern Ocean. It consists of three major processes: (1) isotope fractionation during evaporation from sea surface, (2) Rayleigh distillation during vapor transport, and (3) sublimation of snow at the final site. Source of this model can be obtained by [IsoFracPy GitHub repository](https://github.com/kanonundgigue/IsoFracPy).
+This document describes a simple isotopic model (SIM) that calculates isotope fractionation during vapor transport. The model focuses on vapor transport from low to high latitudes, assuming monotonical temperature decreases, over the Southern Ocean. It consists of three major processes: (1) isotope fractionation during evaporation from sea surface, (2) Rayleigh distillation during vapor transport, and (3) sublimation of snow at the final site. Source of this model can be obtained by [IsoFracPy GitHub repository](https://github.com/kanonundgigue/IsoFracPy).
 
 # Model Structure
 
@@ -68,7 +68,7 @@ The fractionation factor ($\alpha$) takes values from different equations depend
 
 ## Equilibrium Fractionation Factor
 
-the equilibrium fractionation factor ($\alpha_{eq}$) for water isotopes is calculated using empirical equations from Majoube (1971a; 1971b).
+The equilibrium fractionation factor ($\alpha_{eq}$) for water isotopes is calculated using empirical equations from Majoube (1971a; 1971b).
 
 $$
     \alpha_{eq} = \exp \left( \frac{a_1}{T^2} + \frac{a_2}{T} + a_3 \right) \tag{5}
@@ -123,7 +123,7 @@ Following Ciais and Jouzel (1994), we linearly interpolate the fractionation fac
 
 # Processes at the Final Site
 
-the amount of vapor in clouds that produce snowfall is expressed using the pressure heights of cloud base and top ($p_{btm}$, $p_{top}$):
+The amount of vapor in clouds that produce snowfall is expressed using the pressure heights of cloud base and top ($p_{btm}$, $p_{top}$):
 
 $$
     Cld = (p_{btm} - p_{top}) / g \tag{9}
@@ -135,19 +135,17 @@ $$
     Sn_{gen} = Sn_{obs} / (1 - f) / Cld \tag{10}
 $$
 
-The temporal evolution of isotopic ratios is parameterized as follows. We assume that the amount of cloud vapor ($q_{cld}$) remains constant within each time step. From an Eulerian perspective, this assumes continuous vapor advection associated with atmospheric rivers, where the increase in vapor is removed from the cloud as snowfall flux. Changes in the isotopic ratio of vapor during this process are calculated using the temperature-independent Rayleigh distillation equation (eq. 4).
-
-At each time step, the isotopic ratio of cloud vapor is updated by weighting the isotopic ratio of remaining cloud vapor after snow formation ($\delta_{cld}'$) and the isotopic ratio of newly advected vapor ($\delta_{RY}$) according to their respective amounts:
+The temporal evolution of isotopic ratios is parameterized as follows. We assume that the amount of cloud vapor ($q_{cld}$) remains constant within each time step. From an Eulerian perspective, this assumes continuous vapor advection. We also assume that isotopic ratio of cloud vapor does not change during precipitation process; we always use the final value of the Rayleigh distillation process.
 
 $$
-\delta_{cld, updated} = \frac{\delta_{cld}' (q_{cld} - Sn_{gen}) + \delta_{RY} Sn_{gen}}{q_{cld}} \tag{11}
+\delta_{cld} = \delta_{n_{final}} \tag{11}
 $$
 
 The final isotopic ratio of generated snowfall can be obtained as a weighted average of snowfall at each time step. In practice, since the snowfall flux is constant, it can be calculated as a simple time average:
 
 $$
 \delta_{Sn} = \frac{
-\sum \left( (\delta_{cld}' + 1) \alpha_{eff} - 1 \right) 
+\sum \left[ (\delta_{cld} + 1) \alpha_{eff} - 1 \right] 
 }{d} \tag{12}
 $$
 
@@ -204,49 +202,47 @@ $$
     q = \frac{w}{1 + w} \tag{19}
 $$
 
-# Calculation Procedure
+# Exerimental settings
 
-## Initial Condition Setup
+This study conducted three different series of experiments.
 
-The initial condition is determined by the evaporation process from sea surface. Specifically, the initial isotope ratio of vapor is determined by the following parameters: sea surface temperature ($T_{sea}$) and its isotope ratio ($R_{sea}$), and atmospheric conditions above the sea surface including temperature ($T_{a}$), relative humidity ($h_a$), and wind speed ($u$).
+## Series 1: Sensitivity experiments for Evaporation Process from Sea Surface near the Coast
 
-## Changes in Isotope Ratio during Vapor Transport
+Series 1 only used the first part of the SIM. Table 5 summarizes the parameter settings. Sea surface temperature at evaporation source ($T_{sea}$) was set to 0 °C to fit the actual value of coastal region. Air temperature  ($T$) ranged from -20 to 0 °C to test multiple situations. For Wind speed ($u$) and relative humidity ($h$), we chose values that enable us to simulate extreme cases to generate low isotopic ratio of surface air vapor.
 
-Changes in isotope ratios during vapor transport are calculated as a Rayleigh distillation process. Following Jouzel and Merivat (1984), we assume that temperature monotonically decreases along the transport path. We also assume that precipitation formed by condensation is immediately removed from the system and is not re-incorpolated into the vapor mass.
+### Table 5: Parameters used in the Series 1.
 
-## Water Vapor Isotope Ratio at the Final Site
+| Parameter                                        | Symbol      | Value                     | Unit |
+|--------------------------------------------------|-------------|---------------------------|------|
+| Sea surface temperature at evaporation source    | $T_{sea}$   | 0                         | °C   |
+| Air temperature at evaporation source            | $T_a$       | [-20, -15, -10, -5, 0]    | °C   |
+| Wind speed at evaporation source                 | $u$         | 30                        | m/s  |
+| Relative humidity at evaporation source          | $h$         | 0.6                       | ND   |
 
-At the final site, a portion of snowfall formed in the upper air (its tempearture is assumed below 0 °C) sublimates in the near-surface layer (assumed to be unsaturated condition). This sublimation process alters the isotope ratio of vapor near the surface. Therefore, the final isotope ratio of vapor near surface is influced by this snow sublimation process. This  can be determined by the following parameters: near-surface conditions before snowfall occurs (relative humidity: $h_{surf}$, specific humidity: $q_{surf}$, isotope ratio of vapor: $R_{surf}$), sublimation rate of snow ($f$), and the virtual snowfall amount (in terms of relative humidity increment) ($dh$).
+## Series 2: Sensitivity experiments for whole parameter combinaitons (IsoGSM)
 
-# Sensitivity Experiments
+Series 2 used the whole part of SIM and tested the influence of all parameters on the near-surface water vapor isotpic ratio at the final site. Table 6 summarizes the parameter settings. Sea surface temperature at evaporation source ($T_{sea}$) ranged from 5 to 15 °C according to typical sea surface temperatures in latitudes where storm track activity is enhanced (Nakamura *et al.* 2008). $T$ ranged from 0 to 15 °C to be same as $T_{sea}$ or slightly lower than $T_{sea}$. For Cloud temperature at the final site 
+ ($T_{final}$) and Pressure level of the cloud top the final site ($p_{top}$), possible values were given. Pressure level of the cloud bottom the final site ($p_{bottom}$) was fixed to 700 hPa as only the difference between $p_{top}$ and $p_{bottom}$ has sensitivity on Equation 9. For $d$ and $Sn_{tot} (1-f)$, we set values according to Figure 2e, 2g. For $T_{surf}$ and $R_{surf}$, we set values that were consistent with the southery nor northerly (the other) cases according to Figure 2a, 2e. 
+ 
+### Table 6: Parameters used in the Series 2. 
 
-To understand the model behavior, we conducted comprehensive sensitivity experiments for all parameters (Tables 5 and 6). Based on these results, we identified parameters with low sensitivity to the final isotope ratio of vapor near surface ($R_{surf, updated}$) (Table 5) and assigned standard values to them. We then conducted additional sensitivity expereiments for parameters with high sensitivity (Table 6) to quantitatively evaluate their impacts on $R_{surf, updated}$.
+| Parameter                                        | Symbol           | Value              | Unit |
+|--------------------------------------------------|------------------|-------------------- |------|
+| Sea surface temperature at evaporation source    | $T_{sea}$        | 5, 10, 15          | °C   |
+| Air temperature at evaporation source            | $T_a$            | 0, 5, 10, 15       | °C   |
+| Wind speed at evaporation source                 | $u$              | 6.5, 30            | m/s  |
+| Relative humidity at evaporation source          | $h$              | 0.5, 1             | ND   |
+| Consideration of kinetic fractionation during ice formation | -      | True, False        | ND (bool) |
+| Temperature step size for the Rayleigh distillation | $dT$          | 0.5, 1             | °C   |
+| Upper-air temperature at the final site          | $T_{final}$      | -20, -10           | °C   |
+| Pressure level of the cloud top the final site   | $p_{top}$        | 400, 500           | hPa  |
+| Pressure level of the cloud bottom the final site| $p_{bottom}$     | 700                | hPa  |
+| Sublimation efficiency of snowfall               | $f$              | 0.1, 0.5, 0.9      | ND   |
+| Precipitation duration at the final site         | $d$              | 0.25, 1, 3         | day  |
+| Precipitation flux                               | $Sn_{tot}(1-f)$  | 1, 2               | mm/day |
+| Near-surface temperature at the final site       | $T_{surf}$       | 0                  | °C   |
+| Default isotope ratio of vapor near the surface  | $R_{surf}$       | -120               | ‰    |
 
-### Table 5: Parameters with low sensitivity to the final isotope ratio of vapor near surface ($R_{surf, updated}$). The assigned standard values are indicated as bold.
+## Series 3: Sensitivity experiments for whole parameter combinaitons (MIROC5-iso)
 
-| Parameter                          | Symbol       | Value                     | Unit | Note |
-|------------------------------|------------|------------------------|------|------|
-| Sea surface temperature at evaporation source           | $T_{sea}$  | **[5, 10, 15]**        | °C   | *1   |
-| Air temperature at evaporation source              | $T_a$      | [0, 5, 10], **[5, 10, 15]** | °C   |      |
-| Wind speed at evaporation source               | $u$        | **6.5**, 35            | m/s  | *2     |
-| Realative humidity at evaporation source           | $h$        | 0.5, **1**             | ND   |      |
-| Consideration of kinetic fractionation during ice formation         | -          | **True**, False        | bool |      |
-| Near-surface temperature at the final site    | $T_{surf}$ | **0**                  | °C   | *3     |
-| Near-surface relative humidity at the final site | $h_{surf}$ | 0.7, 0.8               | ND   | *4   |
-
-
-**Notes:**
-1. (*1) Typical sea surface temperatures in latitudes where storm track activity is enhanced range from 5 to 15 °C (Nakamura et al. 2008).
-2. (*2) 6.5 m/s was assigned to make $\alpha_{kin,evap}$ constant while realistic values would be higher than that.
-3. (*3) Both observation and GCM experiments show that the Antarctic coastal air temperature is approximately 0 °C.
-4. (*4) Based on observations and GCM experiments, we assigned 0.75 as a typical value.
-
-   
-### Table 6: Parameters with high sensitivity to the final isotope ratio of vapor near surface ($R_{surf, updated}$). 
-
-| Parameter                          | Symbol       | Value                     | Unit | Note |
-|----------------------------------|------------|----------------|------|------|
-| Upper-air temperature at the final site            | $T_{final}$ | [-30, -10]     | °C   |      |
-| Default isotope ratio of vapor near the surface | $R_{surf}$  | [-120, -100]   | ‰    |      |
-| Virtual snowfall amount (in terms of crelative humidity increment) ($dh$).    | $h_{surf}$  | [0.1, 0.2]     | ND   |      |
-| Sublimation efficiency of snowfall                 | $f$        | [0.1, 0.5, 0.9] | ND   |      |
+Series 3 was same as Series 2 except for precipitation flux ($Sn_{tot}(1-f$), which was set to 1 and 10 according to Figure 3g in other to investigate the contribution of precipitation intensity on the near-surface water vapor isotpic ratio at the final site.
