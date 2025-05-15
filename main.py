@@ -28,26 +28,27 @@ def configure_model():
         "temp_thres_max": 0,  # Upper temperature threshold for liquid-vapor fractionation ("vl" phase) [°C].
         #
         ## Tuning parameters
-        "temp_sea_init_list": [ 0, 0, 5, 10, 15],  # List of initial sea surface temperatures [°C].
-        "temp_air_init_list": [-5, 0, 5, 10, 15],  # List of initial air temperatures above the sea surface [°C].
-        "temp_air_fin": -30,  # Final air temperature after Rayleigh distillation [°C].
+        "temp_sea_init_list": [5, 10, 15],  # List of initial sea surface temperatures [°C].
+        "temp_air_init_list": [5, 10, 15],  # List of initial air temperatures above the sea surface [°C].
+        "temp_air_fin": -10,  # Final air temperature after Rayleigh distillation [°C].
         "BOOL_REEVAP": False,  # Whether to consider raindrop re-evaporation during Rayleigh distillation.
                               # (Ref. Worden et al., 2007).
         "reevap_factor": 0.7,  # Re-evaporation factor for raindrops. Affects the fractionation adjupsstment.
         "BOOL_RESUB": True,  # Whether to consider snow sublimation as a post-precipitation process.
         "resub_factor": 0.5,  # Sublimation fraction factor. Controls the effect of snow sublimation on isotope ratios.
-        "prcp_perday": 2, # Daily precipitation amount 
+        "prcp_perday": 2, # Daily precipitation amount
         "prcp_duration": 1, # Duration of precipitation (Number of day).
-        "p_btm": 700, # Air pressure of cloud bottom [hPa].
-        "p_top": 400, # Air pressure of cloud top [hPa].
-        
+        "p_btm": 850, # Air pressure of cloud bottom [hPa].
+        "p_top": 500, # Air pressure of cloud top [hPa].,
+        "CLOUD_AGING": True, # If consider aging of cloud vapor isotope
+
         # "snow_duration_factor": 100,  # Parameter tuning the duration of snowfall effects.
         "delta_q_surf": -120,  # Isotopic ratio (δ-value) of surface vapor [‰].
         "temp_surf": 0,  # Temperature of the surface air layer [°C].
         "rh_surf": 0.75,  # Relative humidity of the surface air layer [ND].
         "drh": 0.2,  # Change in relative humidity of the surface air layer [ND].
-        "ALPHA_RY_MODE": "eff",  # Mode for fractionation factors: "eff" for effective fractionation 
-                             # (including kinetic effects during supercooling), 
+        "ALPHA_RY_MODE": "eff",  # Mode for fractionation factors: "eff" for effective fractionation
+                             # (including kinetic effects during supercooling),
                              # "eq" for equilibrium fractionation only.
     }
 
@@ -60,8 +61,8 @@ def configure_model():
     # Specific humidity at the final surface air [g/kg].
 
     return config_dict
-    
-def main():
+
+def main(ISO_TYPE: str = "HDO", config=None):
     """
     Main function for running the Rayleigh distillation model.
 
@@ -75,9 +76,13 @@ def main():
     Returns:
     - None: Displays the plot.
     """
+    if config is None:
+        config = configure_model()
 
-    config = configure_model()
-    
+        config["ISO_TYPE"] = ISO_TYPE
+        if ISO_TYPE == "H218O":
+            config["delta_q_surf"] = config["delta_q_surf"]/8
+
     # Calculate initial conditions
     initial_dict = initialization(config)
 
@@ -87,14 +92,13 @@ def main():
     rayleigh_results_dict, post_precipitation_results_dict = process_vapor_isotopes(
         config, initial_dict, frac_factors_dict, alpha_ry_mode_list
     )
-        
+
     # Plot results
-    title = f"Rayleigh distillation model" 
-    title += f" (f={config['resub_factor']})" if config["BOOL_RESUB"] else f" (No resublimation.)"
-    
+    title = f"Rayleigh distillation model"
+
     plot_q_dq(
         config, rayleigh_results_dict, post_precipitation_results_dict,
-        ISO_TYPE="HDO", title=title
+        ISO_TYPE=ISO_TYPE, title=title
     )
 
 def initialization(config: dict):
@@ -128,7 +132,7 @@ def get_fractionation_factors(config: dict):
         - list: Selected alpha_ry_mode_list based on ALPHA_RY_MODE.
     """
     frac_factors_dict = prepare_frac_factors(
-        config["temp_default_list"], 
+        config["temp_default_list"],
         temp_thres_min=config["temp_thres_min"],
         temp_thres_max=config["temp_thres_max"],
         ISO_TYPE=config["ISO_TYPE"]
@@ -144,9 +148,9 @@ def get_fractionation_factors(config: dict):
     return frac_factors_dict, alpha_ry_mode_list
 
 def process_vapor_isotopes(
-    config: dict, 
+    config: dict,
     initial_dict: dict,
-    frac_factors_dict: dict, 
+    frac_factors_dict: dict,
     alpha_ry_mode_list: list
 ) -> tuple:
     """
@@ -163,28 +167,32 @@ def process_vapor_isotopes(
         - dict: Results from Rayleigh distillation.
         - dict: Results from post-precipitation process.
     """
-    rayleigh_results_dict = {
-        temp_air_init: rayleigh_process(
-            temp_air_init, 
-            config["temp_air_fin"], 
-            initial_dict["q_sat_air"][i], 
-            initial_dict["delta_air"][i] / 1000,  # permil -> ratio
-            alpha_ry_mode_list,            
-            frac_factors_dict["alpha_kin"], 
-            config["temp_default_list"], 
-            BOOL_REEVAP=config["BOOL_REEVAP"],
-            reevap_factor=config["reevap_factor"], 
-            dt=config["dt"],
-            )
-        for i, temp_air_init in enumerate(config["temp_air_init_list"])
-    }
+    try:
+        rayleigh_results_dict = {
+            temp_air_init: rayleigh_process(
+                temp_air_init,
+                config["temp_air_fin"],
+                initial_dict["q_sat_air"][i],
+                initial_dict["delta_air"][i] / 1000,  # permil -> ratio
+                alpha_ry_mode_list,
+                frac_factors_dict["alpha_kin"],
+                config["temp_default_list"],
+                BOOL_REEVAP=config["BOOL_REEVAP"],
+                reevap_factor=config["reevap_factor"],
+                dt=config["dt"],
+                )
+            for i, temp_air_init in enumerate(config["temp_air_init_list"])
+        }
+    except ValueError as e:
+        print(f"ValueError {e}")
+
 
     post_precipitation_results_dict = {
         temp_air_init: perform_post_precipitation(
             config, rayleigh_results, alpha_ry_mode_list,
         ) for temp_air_init, rayleigh_results in rayleigh_results_dict.items()
     }
-        
+
     return rayleigh_results_dict, post_precipitation_results_dict
 
 def perform_post_precipitation(config, rayleigh_results, alpha_ry_mode_list):
@@ -205,17 +213,17 @@ def perform_post_precipitation(config, rayleigh_results, alpha_ry_mode_list):
     alpha_final = alpha_ry_mode_list[alpha_final_idx]
     q_final = rayleigh_results["q"][-1] # g/kg
     delta_final = rayleigh_results["delta"][-1] / 1000 # permil -> ND
-    
+
     snow, delta_snow = generate_snowfall(delta_final, q_final, alpha_final, config)
-    
+
     if not config["BOOL_RESUB"]:
         return {
             "delta_snow": delta_snow * 1000,
             "snow": snow,
-            "delta": config["delta_q_surf"], 
+            "delta": config["delta_q_surf"],
             "q": config["q_surf"]
         }
-    
+
     # Resublimation process
     delta_q_surf_updated, q_surf_updated = resublimation(
         config["delta_q_surf"] / 1000,
@@ -223,16 +231,14 @@ def perform_post_precipitation(config, rayleigh_results, alpha_ry_mode_list):
         config["q_surf"],
         snow,
         config["resub_factor"]
-    )        
-        
+    )
+
     return {
         "delta_snow": delta_snow * 1000,
         "snow": snow,
-        "delta":delta_q_surf_updated * 1000, 
+        "delta":delta_q_surf_updated * 1000,
         "q": q_surf_updated
     }
-        
-if __name__ == "__main__":
-    main()        
 
-        
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,49 @@
+\documentclass[11pt]{article}
+
+% --- パッケージの読み込み ---
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{caption}
+
+% --- Unicode記号対応 ---
+\DeclareUnicodeCharacter{2212}{-}
+
+% --- メタ情報 ---
+\title{$title$}
+\author{$author$}
+\date{$date$}
+
+\providecommand{\tightlist}{}
+
+\begin{document}
+
+\maketitle
+
+$if(abstract)$
+\begin{abstract}
+\noindent $abstract$
+\end{abstract}
+$endif$
+
+$if(toc)$
+\tableofcontents
+$endif$
+
+$body$
+
+$if(bibliography)$
+\bibliographystyle{plain}
+\bibliography{$bibliography$}
+$endif$
+
+\end{document}
+
