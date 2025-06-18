@@ -124,9 +124,9 @@ def rayleigh_process(
 
 def validate_rayleigh_inputs(temp_init: float, temp_fin: float, q_init: float):
     """
-    Validate inputs for Rayleigh distilation calculations.
+    Validate inputs for Rayleigh distillation calculations.
 
-    Paramters:
+    Parameters:
     - temp_init (float): Initial temperature (°C).
     - temp_fin (float): Final temperature (°C).
     - q_init (float): Initial specific humidity (g/kg).
@@ -174,7 +174,7 @@ def rayleigh_step(alpha: float, q: float, dq: float, delta: float) -> float:
     """
     Perform a single step of the Rayleigh distillation process.
 
-    Paramters:
+    Parameters:
     - alpha (float): Fractionation factor (ND).
     - q (float): Specific humidity (g/kg)
     - dq (float): Change in specific humidity (g/kg).
