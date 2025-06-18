@@ -98,8 +98,7 @@ def mixing_ratio_to_specific_humidity(w1000: float) -> float:
     
     Returns
     - float: Specific humidity (g/kg).
-    """""
-    
+    """
     w = w1000 / 1000
     q = w / (1 + w)
     return q * 1000
