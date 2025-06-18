@@ -137,7 +137,7 @@ def plot_kin_frac_factor(
     Methods:
     - Split the temperature range into positive and negative subsets.
     - For each isotope type:
-        - Caluclate and plot kinetic fractionation factors for ice for negative temperatures
+        - Calculate and plot kinetic fractionation factors for ice for negative temperatures
           using `kin_frac_factor_ice`.
         - Calculate and plot kinetic fractionation factor for sea surface evaporation factors for positive temperatures
           using `kin_frac_factor_sea_evap`.
