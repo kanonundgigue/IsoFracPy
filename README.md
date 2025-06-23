@@ -3,6 +3,10 @@
 This project is developed by Kanon Kino (kanon@hydra.t.u-tokyo.ac.jp).
 Code refactoring was mostly done by ChatGPT-4o.
 
+If you use this model for your work, please ask the author to be a co-author or cite the paper according to its contributions.
+Kino, K., Okazaki, A., Bong, H., & Yoshimura, K. (2025). Assessing synoptic-scale variability in isotope-enabled climate models: challenges for water vapor isotopes over the Southern Ocean. Hydrological Research Letters, 19(2), 112–119. https://doi.org/10.3178/hrl.24-00034
+
+
 ## Project Structure
 
 ```
