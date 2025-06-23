@@ -12,8 +12,8 @@ To convert to pdf:
 
 # 1. Description of the Simple Isotopic Model
 
-**The content of this document is same with Text S1 of SI for Kino *et al.* (2025). Please cite the paper if you refer to this document.**
-
+**The content of this document is same with Text S1 of SI for [Kino *et al.* (2025)](https://doi.org/10.3178/hrl.24-00034). If you use this model for your work, please ask the author to be a co-author or cite the paper according to its contributions.**
+- Kino, K., Okazaki, A., Bong, H., & Yoshimura, K. (2025). Assessing synoptic-scale variability in isotope-enabled climate models: challenges for water vapor isotopes over the Southern Ocean. Hydrological Research Letters, 19(2), 112–119. https://doi.org/10.3178/hrl.24-00034
 ---
 
 We developed a new simple isotopic model (SIM) that calculates isotope fractionation during vapor transport. The model focused on vapor transport from low to high latitudes, assuming a monotonic temperature decrease over the Southern Ocean. It consists of three major processes: (i) isotope fractionation during evaporation from the sea surface ([Section 1.1](#1.1-Evaporation-Process-from-Sea-Surface)), (ii) Rayleigh distillation during vapor transport ([Section 1.2](#1.2-Vapor-Transport-Process)), and (iii) generation of snowfall considering its duration and sublimation above the final precipitation site ([Section 1.3](#1.3-Processes-at-the-Final-Site)). The source of this model can be obtained from [IsoFracPy GitHub repository](https://github.com/kanonundgigue/IsoFracPy).
